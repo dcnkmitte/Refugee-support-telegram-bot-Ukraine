@@ -15,12 +15,6 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-variables:
-        buildConfiguration: 'Release'
-        dotNetFramework: 'net6.0'
-        dotNetVersion: '6.0.x'
-        targetRuntime: 'linux-x64'
-
 
 steps:
 - task: DotNetCoreCLI@2
@@ -36,3 +30,9 @@ steps:
     arguments: '-o ./binaries'
     zipAfterPublish: false
 
+- task: Docker@2
+  inputs:
+    containerRegistry: 'DockerHub'
+    repository: 'hannovernkmitte/telegram-bot-help-ukrainian-refugees'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
