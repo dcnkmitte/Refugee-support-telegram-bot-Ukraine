@@ -12,5 +12,40 @@ trigger:
     include:
     - Sources
 
-stages:
-  - template: "build_net_core.yaml"
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+        buildConfiguration: 'Release'
+        dotNetFramework: 'net6.0'
+        dotNetVersion: '6.0.x'
+        targetRuntime: 'linux-x64'
+
+
+steps:
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+
+- task: UseDotNet@2
+  displayName: 'Install $(dotNetFramework)'
+  inputs:
+    packageType: 'sdk'
+    version: $(dotNetVersion)
+    performMultiLevelLookup: true
+
+- task: DotNetCoreCLI@2
+  displayName: 'Dotnet Build config: $(buildConfiguration)'
+  inputs:
+    command: 'build'
+    projects: '**/ChatBot/ChatBot.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Dotnet Test config: $(buildConfiguration)'
+  inputs:
+    command: test
+    projects: '**/*Tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
