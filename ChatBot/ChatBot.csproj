@@ -14,6 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Infrastructure.Directus\Infrastructure.Directus.csproj" />
       <ProjectReference Include="..\Infrastructure.Telegram\Infrastructure.Telegram.csproj" />
     </ItemGroup>
 
