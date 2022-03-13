@@ -1,0 +1,43 @@
+stages:
+- stage: Azure
+  displayName: Azure
+  jobs:
+    - job: Build
+      displayName: Build
+      pool:
+        vmImage: 'ubuntu-latest'
+
+      variables:
+        buildConfiguration: 'Release'
+        dotNetFramework: 'net6.0'
+        dotNetVersion: '6.0.x'
+        targetRuntime: 'linux-x64'
+
+      steps:
+      - task: NuGetToolInstaller@1
+        displayName: NugetInstaller
+  
+      - task: NuGetCommand@2
+        displayName: RestoreNugets
+        inputs:
+          restoreSolution: '$(solution)'
+  
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '5.0.x'
+        displayName: Use Dot Net Sdk
+  
+      - task: DotNetCoreCLI@2
+        displayName: 'Dotnet Build config: $(buildConfiguration)'
+        inputs:
+          command: 'build'
+          projects: '$(relativePathToSources)/$(project)'
+          arguments: '--configuration $(buildConfiguration)'
+      
+      - task: DotNetCoreCLI@2
+        displayName: 'Dotnet Test config: $(buildConfiguration)'
+        inputs:
+          command: test
+          projects: '**/*Tests/*.csproj'
+          arguments: '--configuration $(buildConfiguration)'

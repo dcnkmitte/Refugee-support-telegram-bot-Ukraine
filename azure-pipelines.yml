@@ -1,0 +1,38 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+      include:
+      - master
+      - develop
+  paths:
+    include:
+    - Sources
+
+pool:
+  vmImage: ubuntu-latest
+
+
+steps:
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'restore'
+    feedsToUse: 'select'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: '**/ChatBot/ChatBot.csproj'
+    arguments: '-o ./binaries'
+    zipAfterPublish: false
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'DockerHub'
+    repository: 'hannovernkmitte/telegram-bot-help-ukrainian-refugees'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
