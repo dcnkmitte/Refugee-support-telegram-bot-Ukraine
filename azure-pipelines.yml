@@ -36,4 +36,3 @@ steps:
     repository: 'hannovernkmitte/telegram-bot-help-ukrainian-refugees'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
-    tags: '0.0.1'
