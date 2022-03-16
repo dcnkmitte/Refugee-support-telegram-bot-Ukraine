@@ -10,7 +10,7 @@ trigger:
       - develop
   paths:
     include:
-    - Sources
+    - Source
 
 pool:
   vmImage: ubuntu-latest
@@ -18,11 +18,14 @@ pool:
 
 steps:
 - task: DotNetCoreCLI@2
+  displayName: Restore nugets
   inputs:
     command: 'restore'
     feedsToUse: 'select'
+    workingDirectory: ./Source
 
 - task: DotNetCoreCLI@2
+  displayName: Publish
   inputs:
     command: 'publish'
     publishWebProjects: false
@@ -32,6 +35,7 @@ steps:
     workingDirectory: ./Source
 
 - task: Docker@2
+  displayName: Build docker and push
   inputs:
     containerRegistry: 'DockerHub'
     repository: 'hannovernkmitte/telegram-bot-help-ukrainian-refugees'
