@@ -38,5 +38,5 @@ steps:
     containerRegistry: 'DockerHub'
     repository: 'hannovernkmitte/telegram-bot-help-ukrainian-refugees'
     command: 'buildAndPush'
-    Dockerfile: './Dockerfile'
-    buildContext: '$(System.DefaultWorkingDirectory)/binaries'
+    Dockerfile: '$(System.DefaultWorkingDirectory)/binaries/ChatBot/Dockerfile'
+    buildContext: '$(System.DefaultWorkingDirectory)/binaries/ChatBot'
