@@ -29,6 +29,7 @@ steps:
     projects: '**/ChatBot/ChatBot.csproj'
     arguments: '-o ./binaries'
     zipAfterPublish: false
+    workingDirectory: ./Source
 
 - task: Docker@2
   inputs:
