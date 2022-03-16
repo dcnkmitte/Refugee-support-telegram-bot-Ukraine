@@ -1,0 +1,43 @@
+---
+- name: Prepare the environment for service deployments
+  become: true
+  hosts: nk_mitte
+
+  tasks:
+  - name: Add Docker APT key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+
+  - name: Add Docker APT repository
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/debian buster stable
+
+  - name: Update APT repos and caches
+    apt:
+      update_cache: yes
+
+  - name: Install Docker
+    apt:
+      name: 
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - python3-requests
+        - python3-docker
+
+  - name: Ensure the "docker" group exists
+    group:
+      name: docker
+      state: present
+
+  - name: Add the user "dmytro" to the "docker" group
+    user:
+      name: dmytro
+      groups: docker
+      append: yes
+
+  - name: Add the user "dawid" to the "docker" group
+    user:
+      name: dawid
+      groups: docker
+      append: yes

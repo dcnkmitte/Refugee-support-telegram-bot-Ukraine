@@ -1,0 +1,4 @@
+add
+
+  hosts: all
+  remote_user: root

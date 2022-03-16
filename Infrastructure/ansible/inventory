@@ -1,0 +1,9 @@
+[all:vars]
+ansible_user = dmytro
+ansible_connection=ssh
+
+[nk_mitte]
+vps.nk-mitte.de
+
+[nk_mitte:vars]
+ansible_python_interpreter=/usr/bin/python3

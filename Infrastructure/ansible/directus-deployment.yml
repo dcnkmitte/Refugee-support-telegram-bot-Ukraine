@@ -1,0 +1,62 @@
+---
+- name: Deploy Directus
+  become: true
+  hosts: nk_mitte
+
+  tasks:
+
+    - name: Fail if directus_cms_key is missing
+      fail:
+        msg: "directus_cms_key is missing or empty"
+      when: (directus_cms_key|length == 0)
+
+    - name: Fail if directus_cms_secret is missing
+      fail:
+        msg: "directus_cms_secret is missing or empty"
+      when: (directus_cms_secret|length == 0)
+
+    - name: Fail if directus_cms_admin_email is missing
+      fail:
+        msg: "directus_cms_admin_email is missing or empty"
+      when: (directus_cms_admin_email|length == 0)
+
+    - name: Fail if directus_cms_admin_password is missing
+      fail:
+        msg: "directus_cms_admin_password is missing or empty"
+      when: (directus_cms_admin_password|length == 0)
+
+
+    - name: Create database volume 
+      docker_volume:
+        name: directus_database
+        state: present
+
+    - name: Create uploads volume
+      docker_volume:
+        name: directus_uploads
+        state: present
+
+    - name: Create extensions volume
+      docker_volume:
+        name: directus_extensions
+        state: present
+
+    - name: Deploy Directus
+      docker_container:
+        name: directus-cms
+        image: directus/directus
+        ports: 
+          - "8055:8055"
+        state: started
+        recreate: yes
+        restart_policy: always
+        pull: true
+        env:
+          KEY: "{{ directus_cms_key }}"
+          SECRET: "{{ directus_cms_secret }}"
+          ADMIN_EMAIL: "{{ directus_cms_admin_email }}"
+          ADMIN_PASSWORD: "{{ directus_cms_admin_password }}"
+        volumes:
+          - directus_database:/directus/database 
+          - directus_uploads:/directus/uploads 
+          - directus_extensions:/directus/extensions

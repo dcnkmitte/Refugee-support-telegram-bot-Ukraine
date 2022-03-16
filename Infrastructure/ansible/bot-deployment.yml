@@ -1,0 +1,43 @@
+---
+- name: Deploy serivces 
+  become: true
+  hosts: nk_mitte
+  vars: 
+    docker_registry_name: hannovernkmitte  
+
+
+  tasks:
+
+    - name: Fail if deployment_version is missing
+      fail:
+        msg: "deployment_version is missing or empty"
+      when: (deployment_version|length == 0)
+
+    - name: Fail if telegram_access_token is missing
+      fail:
+        msg: "telegram_access_token is missing or empty"
+      when: (telegram_access_token|length == 0)
+
+    - name: Fail if directus_email is missing
+      fail:
+        msg: "directus_email is missing or empty"
+      when: (directus_email|length == 0)
+
+    - name: Fail if directus_password is missing
+      fail:
+        msg: "directus_password is missing or empty"
+      when: (directus_password|length == 0)
+
+
+    - name: Deploy the TelegramBot
+      docker_container:
+        name: telegram-bot
+        image: "{{ docker_registry_name }}/telegram-bot-help-ukrainian-refugees:{{ deployment_version }}"
+        state: started
+        recreate: yes
+        restart_policy: always
+        pull: true
+        env: 
+          Telegram:AccessToken: "{{ telegram_access_token }}"
+          Directus:Password: "{{ directus_password }}"
+          Directus:Email: "{{ directus_email }}"
