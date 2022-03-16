@@ -38,12 +38,5 @@ steps:
     containerRegistry: 'DockerHub'
     repository: 'hannovernkmitte/telegram-bot-help-ukrainian-refugees'
     command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'
-    buildContext: '**buildContext'
-
-
-- task: Docker@2
-  inputs:
-    command: 'buildAndPush'
     Dockerfile: './Dockerfile'
     buildContext: '$(System.DefaultWorkingDirectory)/binaries'
