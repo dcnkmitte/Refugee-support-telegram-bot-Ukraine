@@ -1,15 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿namespace Infrastructure.Directus.Models;
 
-namespace Infrastructure.Directus.Models;
-
-public enum DirectusItemStatus
+public static class DirectusItemStatus
 {
-  [JsonProperty("published")]
-  Published = 1,
-
-  [JsonProperty("draft")]
-  Draft = 2,
-
-  [JsonProperty("archived")]
-  Archived = 3
+  public static string Published => "published";
+  public static string Draft => "draft";
+  public static string Archived => "archived";
 }

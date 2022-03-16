@@ -2,7 +2,7 @@
 
 public class DirectusConfig
 {
-  public string Email { get; set; }
-  public string Password { get; set; }
-  public int CityId { get; set; }
+  public string AccessToken { get; set; }
+  public string City { get; set; }
+  public string PreferredLanguage { get; set; }
 }

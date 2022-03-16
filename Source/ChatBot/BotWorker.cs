@@ -1,7 +1,6 @@
 ﻿using Infrastructure.Directus;
 using Infrastructure.Directus.Models;
 using Infrastructure.Telegram;
-using Infrastructure.Telegram.Extensions;
 using Infrastructure.Telegram.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -57,22 +56,35 @@ public class BotWorker : BackgroundService
     return topics;
   }
 
-  private List<Topic> ConvertToTopics(
-    (DirectusTopicName namesContainer, DirectusTopicBody bodiesContainer) directusTopics)
+  private List<Topic> ConvertToTopics(DirectusTopic[] directusTopics)
   {
-    var names = directusTopics.namesContainer.Data;
-    var bodies = directusTopics.bodiesContainer.Data;
+    var preferredLanguage = this.directusService.PreferredLanguage;
+    var result = new List<Topic>();
 
-    var results = new List<Topic>();
-    foreach (var name in names.Where(x => x.Status == DirectusItemStatus.Published))
+    foreach (var directusTopic in directusTopics)
     {
-      var matchingBodies = bodies.Where(x => x.Status == DirectusItemStatus.Published && x.Area == name.Id).ToList();
-      if (matchingBodies.Empty()) continue;
+      var isTopicNamePresentInPreferredLanguage =
+        directusTopic.DetailsTopicNameArea.MultiLanguageBody.Any(x => x.Language.Name.Equals(preferredLanguage));
 
-      var topic = new Topic(name.Name, string.Join("\n \n", matchingBodies.Select(x => x.Content)));
-      results.Add(topic);
+      var isTopicContentPresentInPreferredLanguage =
+        directusTopic.DetailsTopicContentArea.Any(x => x.Language.Name.Equals(preferredLanguage));
+
+      var topicName = isTopicContentPresentInPreferredLanguage
+        ? directusTopic.DetailsTopicNameArea.MultiLanguageBody.First(x => x.Language.Name.Equals(preferredLanguage))
+          .TopicName
+        : directusTopic.DetailsTopicNameArea.MultiLanguageBody.FirstOrDefault()?.TopicName;
+
+      if (topicName == null) continue;
+
+      var topicContent = isTopicContentPresentInPreferredLanguage
+        ? directusTopic.DetailsTopicContentArea.First(x => x.Language.Name.Equals(preferredLanguage)).TopicContent
+        : directusTopic.DetailsTopicContentArea.FirstOrDefault()?.TopicContent;
+
+      if (topicContent == null) continue;
+
+      result.Add(new Topic(topicName, topicContent));
     }
 
-    return results;
+    return result;
   }
 }
