@@ -26,7 +26,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
-    projects: '**/ChatBot/ChatBot.csproj'
+    projects: './ChatBot/ChatBot.csproj'
     arguments: '-o ./binaries'
     zipAfterPublish: false
     workingDirectory: ./Source
