@@ -15,14 +15,13 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-
 steps:
 - task: DotNetCoreCLI@2
   displayName: Restore nugets
   inputs:
     command: 'restore'
+    projects: '**/*.csproj'
     feedsToUse: 'select'
-    workingDirectory: ./Source
 
 - task: DotNetCoreCLI@2
   displayName: Publish
