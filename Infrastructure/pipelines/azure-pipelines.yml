@@ -29,7 +29,7 @@ steps:
     command: 'publish'
     publishWebProjects: false
     projects: '**/ChatBot/ChatBot.csproj'
-    arguments: '-o ./binaries'
+    arguments: '-o $(System.DefaultWorkingDirectory)/binaries'
     zipAfterPublish: false
 
 - task: Docker@2
@@ -39,3 +39,11 @@ steps:
     repository: 'hannovernkmitte/telegram-bot-help-ukrainian-refugees'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
+    buildContext: '**buildContext'
+
+
+- task: Docker@2
+  inputs:
+    command: 'buildAndPush'
+    Dockerfile: './Dockerfile'
+    buildContext: '$(System.DefaultWorkingDirectory)/binaries'
