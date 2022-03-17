@@ -16,6 +16,14 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish deployment scripts to artifacts
+  inputs:
+    PathtoPublish: './Infrastructure/ansible/bot-deployment.yaml'
+    ArtifactName: 'deployment'
+    publishLocation: 'Container'
+
 - task: DotNetCoreCLI@2
   displayName: Restore nugets
   inputs:
