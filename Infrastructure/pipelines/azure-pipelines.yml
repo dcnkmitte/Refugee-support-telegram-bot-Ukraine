@@ -10,29 +10,33 @@ trigger:
       - develop
   paths:
     include:
-    - Sources
+    - Source
 
 pool:
   vmImage: ubuntu-latest
 
-
 steps:
 - task: DotNetCoreCLI@2
+  displayName: Restore nugets
   inputs:
     command: 'restore'
+    projects: '**/*.csproj'
     feedsToUse: 'select'
 
 - task: DotNetCoreCLI@2
+  displayName: Publish
   inputs:
     command: 'publish'
     publishWebProjects: false
     projects: '**/ChatBot/ChatBot.csproj'
-    arguments: '-o ./binaries'
+    arguments: '-o $(System.DefaultWorkingDirectory)/binaries'
     zipAfterPublish: false
 
 - task: Docker@2
+  displayName: Build docker and push
   inputs:
     containerRegistry: 'DockerHub'
     repository: 'hannovernkmitte/telegram-bot-help-ukrainian-refugees'
     command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'
+    Dockerfile: '$(System.DefaultWorkingDirectory)/binaries/ChatBot/Dockerfile'
+    buildContext: '$(System.DefaultWorkingDirectory)/binaries/ChatBot'

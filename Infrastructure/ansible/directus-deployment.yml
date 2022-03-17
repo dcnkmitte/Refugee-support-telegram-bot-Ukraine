@@ -56,6 +56,7 @@
           SECRET: "{{ directus_cms_secret }}"
           ADMIN_EMAIL: "{{ directus_cms_admin_email }}"
           ADMIN_PASSWORD: "{{ directus_cms_admin_password }}"
+          EMAIL_FROM: "{{ directus_cms_admin_email }}"
         volumes:
           - directus_database:/directus/database 
           - directus_uploads:/directus/uploads 
