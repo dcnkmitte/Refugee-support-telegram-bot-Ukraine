@@ -82,7 +82,9 @@ public class BotWorker : BackgroundService
 
       if (topicContent == null) continue;
 
-      result.Add(new Topic(topicName, topicContent));
+      var updatedDateTimeUtc = directusTopic.DateUpdated ?? directusTopic.DateCreated;
+
+      result.Add(new Topic(topicName, topicContent, updatedDateTimeUtc));
     }
 
     return result;

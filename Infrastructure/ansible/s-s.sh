@@ -1,1 +1,1 @@
-ansible-playbook --inventory-file inventory setup-server.yml -kK
+ansible-playbook --inventory-file inventory setup-server.yaml -kK

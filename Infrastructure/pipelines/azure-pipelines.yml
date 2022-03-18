@@ -16,6 +16,7 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+
 - task: DotNetCoreCLI@2
   displayName: Restore nugets
   inputs:
@@ -40,3 +41,10 @@ steps:
     command: 'buildAndPush'
     Dockerfile: '$(System.DefaultWorkingDirectory)/binaries/ChatBot/Dockerfile'
     buildContext: '$(System.DefaultWorkingDirectory)/binaries/ChatBot'
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish deployment scripts to artifacts
+  inputs:
+    PathtoPublish: './Infrastructure/ansible/bot-deployment.yaml'
+    ArtifactName: 'deployment'
+    publishLocation: 'Container'

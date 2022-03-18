@@ -20,7 +20,7 @@ public class TelegramService : ITelegramService
   private readonly TelegramBotClient botClientInternal;
   private InlineKeyboardMarkup helpOptionsKeyboardMarkup;
   private readonly InlineKeyboardMarkup toMainMenuKeyboardMarkup;
-  private Dictionary<string, string> responseCatalog;
+  private Dictionary<string, Topic> responseCatalog;
   private readonly InteractiveElementBase toMainMenuButton = ToMainMenu.Create();
 
   public TelegramService(IOptions<TelegramConfig> configContainer, ILogger<TelegramService> log)
@@ -43,7 +43,8 @@ public class TelegramService : ITelegramService
       AllowedUpdates = new[] { UpdateType.CallbackQuery, UpdateType.Message }
     };
 
-    this.botClientInternal.StartReceiving(this.HandleUpdateAsync, this.HandleErrorAsync, receiverOptions, cancellationToken);
+    this.botClientInternal.StartReceiving(this.HandleUpdateAsync, this.HandleErrorAsync, receiverOptions,
+      cancellationToken);
 
     var me = await this.botClientInternal.GetMeAsync(cancellationToken);
     this.log.LogInformation("Start listening for {Username}", me.Username);
@@ -52,7 +53,7 @@ public class TelegramService : ITelegramService
   public void UpdateTopics(ICollection<Topic> topics)
   {
     this.helpOptionsKeyboardMarkup = topics.ToInlineKeyboard();
-    this.responseCatalog = topics.ToDictionary(x => x.Id, x => x.ResponseBody);
+    this.responseCatalog = topics.ToDictionary(x => x.Id, x => x);
   }
 
   private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
@@ -86,11 +87,16 @@ public class TelegramService : ITelegramService
             break;
           }
 
-          if (this.responseCatalog.TryGetValue(topicId, out var responseMessage))
+          if (this.responseCatalog.TryGetValue(topicId, out var topic))
           {
+            var updatedDateTime = topic.UpdatedDateTimeUtc.ToLocalTime().ToString("MM/dd/yyyy HH:mm");
+            var text =
+              $"<strong>{topic.Title}</strong> \n \n {topic.ResponseBody} \n \n<strong>Последнее обновление: {updatedDateTime}</strong>";
+
             await botClient.SendTextMessageAsync(
               chatId,
-              responseMessage,
+              text,
+              ParseMode.Html,
               cancellationToken: cancellationToken);
           }
 
@@ -110,7 +116,7 @@ public class TelegramService : ITelegramService
   {
     await this.botClientInternal.SendTextMessageAsync(
       chatId,
-      "🇺🇦 Here is the most important information 🇺🇦",
+      "Что вас интересует?",
       replyMarkup: this.helpOptionsKeyboardMarkup,
       cancellationToken: cancellationToken);
   }
@@ -119,7 +125,7 @@ public class TelegramService : ITelegramService
   {
     await this.botClientInternal.SendTextMessageAsync(
       chatId,
-      "🇺🇦 Слава Україні! 🇺🇦",
+      "Если информация устарела, сообщите нам kontakt@nk-mitte.de",
       replyMarkup: this.toMainMenuKeyboardMarkup,
       cancellationToken: cancellationToken);
   }
