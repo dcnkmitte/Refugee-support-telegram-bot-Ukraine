@@ -56,7 +56,15 @@
           SECRET: "{{ directus_cms_secret }}"
           ADMIN_EMAIL: "{{ directus_cms_admin_email }}"
           ADMIN_PASSWORD: "{{ directus_cms_admin_password }}"
-          EMAIL_FROM: "{{ directus_cms_admin_email }}"
+          DIRECTUS_MAIL_DEFAULT_FROM: "{{ directus_cms_admin_email }}"
+          EMAIL_TRANSPORT: "{{ directus_cms_email_transport }}"
+          EMAIL_SMTP_HOST: "{{ directus_cms_email_smtp_host }}"
+          EMAIL_SMTP_PORT: "{{ directus_cms_email_smtp_port }}"
+          EMAIL_SMTP_USER: "{{ directus_cms_email_smtp_user }}"
+          EMAIL_SMTP_PASSWORD: "{{ directus_cms_email_smtp_password }}"
+          EMAIL_SMTP_SECURE: "{{ directus_cms_email_smtp_secure }}"
+
+
         volumes:
           - directus_database:/directus/database 
           - directus_uploads:/directus/uploads 

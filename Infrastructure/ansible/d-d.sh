@@ -1,4 +1,4 @@
 ansible-playbook --inventory-file inventory \
---extra-vars "directus_cms_key=$DIRECTUS_CMS_KEY directus_cms_secret=$DIRECTUS_CMS_SECRET directus_cms_admin_email=$DIRECTUS_CMS_ADMIN_EMAIL directus_cms_admin_password=$DIRECTUS_CMS_ADMIN_PASSWORD" \
+--extra-vars "directus_cms_key=$DIRECTUS_CMS_KEY directus_cms_secret=$DIRECTUS_CMS_SECRET directus_cms_admin_email=$DIRECTUS_CMS_ADMIN_EMAIL directus_cms_admin_password=$DIRECTUS_CMS_ADMIN_PASSWORD directus_cms_email_transport=$DIRECTUS_CMS_EMAIL_TRANSPORT directus_cms_email_smtp_host=$DIRECTUS_CMS_EMAIL_SMTP_HOST directus_cms_email_smtp_port=$DIRECTUS_CMS_EMAIL_SMTP_PORT directus_cms_email_smtp_user=$DIRECTUS_CMS_EMAIL_SMTP_USER directus_cms_email_smtp_password=$DIRECTUS_CMS_EMAIL_SMTP_PASSWORD directus_cms_email_smtp_secure=$DIRECTUS_CMS_EMAIL_SMTP_SECURE" \
 directus-deployment.yml \
 -kK
