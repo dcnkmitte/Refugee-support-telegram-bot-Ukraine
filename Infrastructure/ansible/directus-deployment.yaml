@@ -52,6 +52,7 @@
         restart_policy: always
         pull: true
         env:
+          PUBLIC_URL: "https://cms.nk-mitte.de"
           KEY: "{{ directus_cms_key }}"
           SECRET: "{{ directus_cms_secret }}"
           ADMIN_EMAIL: "{{ directus_cms_admin_email }}"
