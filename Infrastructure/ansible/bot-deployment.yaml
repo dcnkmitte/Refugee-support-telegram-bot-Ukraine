@@ -2,6 +2,8 @@
 - name: Deploy serivces
   become: true
   hosts: all
+  sudo_user: ansible
+  remote_user: ansible
   vars:
     docker_registry_name: hannovernkmitte
 
