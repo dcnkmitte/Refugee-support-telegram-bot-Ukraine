@@ -1,9 +1,9 @@
 ---
-- name: Deploy serivces 
+- name: Deploy serivces
   become: true
   hosts: nk_mitte
-  vars: 
-    docker_registry_name: hannovernkmitte  
+  vars:
+    docker_registry_name: hannovernkmitte
 
 
   tasks:
@@ -18,15 +18,10 @@
         msg: "telegram_access_token is missing or empty"
       when: (telegram_access_token|length == 0)
 
-    - name: Fail if directus_email is missing
+    - name: Fail if directus_access_token is missing
       fail:
-        msg: "directus_email is missing or empty"
-      when: (directus_email|length == 0)
-
-    - name: Fail if directus_password is missing
-      fail:
-        msg: "directus_password is missing or empty"
-      when: (directus_password|length == 0)
+        msg: "directus_access_token is missing or empty"
+      when: (directus_access_token|length == 0)
 
 
     - name: Deploy the TelegramBot
@@ -37,7 +32,6 @@
         recreate: yes
         restart_policy: always
         pull: true
-        env: 
+        env:
           Telegram:AccessToken: "{{ telegram_access_token }}"
-          Directus:Password: "{{ directus_password }}"
-          Directus:Email: "{{ directus_email }}"
+          Directus:AccessToken: "{{ directus_access_token }}"

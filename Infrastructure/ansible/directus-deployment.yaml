@@ -25,6 +25,38 @@
         msg: "directus_cms_admin_password is missing or empty"
       when: (directus_cms_admin_password|length == 0)
 
+    - name: Fail if directus_cms_email_transport is missing
+      fail:
+        msg: "directus_cms_email_transport is missing or empty"
+      when: (directus_cms_email_transport|length == 0)
+
+    - name: Fail if directus_cms_email_smtp_host is missing
+      fail:
+        msg: "directus_cms_email_smtp_host is missing or empty"
+      when: (directus_cms_email_smtp_host|length == 0)
+
+    - name: Fail if directus_cms_email_smtp_port is missing
+      fail:
+        msg: "directus_cms_email_smtp_port is missing or empty"
+      when: (directus_cms_email_smtp_port|length == 0)
+
+    - name: Fail if directus_cms_email_smtp_user is missing
+      fail:
+        msg: "directus_cms_email_smtp_user is missing or empty"
+      when: (directus_cms_email_smtp_user|length == 0)
+
+    - name: Fail if directus_cms_email_smtp_password is missing
+      fail:
+        msg: "directus_cms_email_smtp_password is missing or empty"
+      when: (directus_cms_email_smtp_password|length == 0)
+
+    - name: Fail if directus_cms_email_smtp_secure is missing
+      fail:
+        msg: "directus_cms_email_smtp_secure is missing or empty"
+      when: (directus_cms_email_smtp_secure|length == 0)
+
+
+
 
     - name: Create database volume 
       docker_volume:
