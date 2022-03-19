@@ -1,7 +1,6 @@
 ---
 - name: Deploy serivces
-  hosts: localhost
-  connection: local
+  hosts: all
   become_user: ansible
   remote_user: ansible
   vars:
