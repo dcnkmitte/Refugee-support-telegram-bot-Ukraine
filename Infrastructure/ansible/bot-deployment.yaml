@@ -1,6 +1,5 @@
 ---
 - name: Deploy serivces
-  become: false
   hosts: localhost
   connection: local 
   sudo_user: ansible
