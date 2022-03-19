@@ -41,3 +41,9 @@
       name: dawid
       groups: docker
       append: yes
+
+  - name: Add the user "ansible" to the "docker" group
+    user:
+      name: ansible
+      groups: docker
+      append: yes
