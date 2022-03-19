@@ -1,7 +1,8 @@
 ---
 - name: Deploy serivces
-  become: true
-  hosts: all
+  become: false
+  hosts: localhost
+  connection: local 
   sudo_user: ansible
   remote_user: ansible
   vars:
