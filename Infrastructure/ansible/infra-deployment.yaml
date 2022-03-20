@@ -1,0 +1,39 @@
+---
+- name: Deploy shared infrastructure
+  become: true
+  hosts: nk_mitte
+
+  tasks:
+
+    - name: Fail if seq_admin_password is missing
+      fail:
+        msg: "seq_admin_password is missing or empty"
+      when: (seq_admin_password|length == 0)
+
+    - name: Create seq volume 
+      docker_volume:
+        name: seq
+        state: present
+
+    - name: Generate password
+      shell: echo "{{ seq_admin_password }}" | docker run --rm -i datalust/seq config hash
+      register: seq_hashed_password
+
+    - name: Export password to a variable
+      set_fact: seq_hashed_password={{ seq_hashed_password.stdout }}
+
+    - name: Deploy seq
+      docker_container:
+        name: seq
+        image: datalust/seq
+        ports: 
+          - "5341:5341"
+          - "5340:80" 
+        state: started
+        recreate: yes
+        restart_policy: always
+        env:
+          SEQ_FIRSTRUN_ADMINPASSWORDHASH: "{{ seq_hashed_password }}"
+          ACCEPT_EULA: "Y"
+        volumes:
+          - seq:/data 
