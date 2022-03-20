@@ -69,11 +69,25 @@ public class TelegramService : ITelegramService
 
           if (update.Message.Type == MessageType.Text)
           {
-            var messageText = update.Message.Text;
-            this.log.LogInformation("Received a '{TextMessage}' message in chat '{ChatId}'", messageText, chatId);
-          }
+            if (update.Message.Text == "/start")
+            {
+              await this.PrintMainMenuAsync(chatId, cancellationToken);
+            }
+            else
+            {
+              var messageText = update.Message.Text;
+              this.log.LogInformation("Received a '{TextMessage}' message in chat '{ChatId}'", messageText, chatId);
 
-          await this.PrintMainMenuAsync(chatId, cancellationToken);
+              // TODO: Respond to custom messages that we process their questions and add answers in the coming days
+
+              await this.PrintGoToMainMenuAsync(chatId, cancellationToken, "Мы передали Ваш вопрос администраторам и постараемся добавить на него ответ в ближайшие дни. \n");
+            }
+          }
+          else
+          {
+            await this.PrintMainMenuAsync(chatId, cancellationToken);
+
+          }
 
           break;
         }
@@ -127,11 +141,12 @@ public class TelegramService : ITelegramService
       cancellationToken: cancellationToken);
   }
 
-  private async Task PrintGoToMainMenuAsync(long chatId, CancellationToken cancellationToken)
+  private async Task PrintGoToMainMenuAsync(long chatId, CancellationToken cancellationToken,
+    string message = "Если информация устарела, сообщите нам ukraine@nk-mitte.de")
   {
     await this.botClientInternal.SendTextMessageAsync(
       chatId,
-      "Если информация устарела, сообщите нам ukraine@nk-mitte.de",
+      message,
       replyMarkup: this.toMainMenuKeyboardMarkup,
       cancellationToken: cancellationToken);
   }
