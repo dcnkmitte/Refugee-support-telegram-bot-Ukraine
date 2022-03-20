@@ -33,6 +33,9 @@
         recreate: yes
         restart_policy: always
         pull: true
-        env:
+        networks:
+          - name: ukraine
+        purge_networks: yes
+        env: 
           Telegram:AccessToken: "{{ telegram_access_token }}"
           Directus:AccessToken: "{{ directus_access_token }}"

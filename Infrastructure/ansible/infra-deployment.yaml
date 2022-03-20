@@ -4,6 +4,9 @@
   hosts: nk_mitte
 
   tasks:
+    - name: Create a network
+      community.docker.docker_network:
+        name: ukraine
 
     - name: Fail if seq_admin_password is missing
       fail:
@@ -32,6 +35,9 @@
         state: started
         recreate: yes
         restart_policy: always
+        networks:
+          - name: ukraine
+        purge_networks: yes
         env:
           SEQ_FIRSTRUN_ADMINPASSWORDHASH: "{{ seq_hashed_password }}"
           ACCEPT_EULA: "Y"
