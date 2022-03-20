@@ -125,7 +125,7 @@ public class TelegramService : ITelegramService
   {
     await this.botClientInternal.SendTextMessageAsync(
       chatId,
-      "Если информация устарела, сообщите нам kontakt@nk-mitte.de",
+      "Если информация устарела, сообщите нам ukraine@nk-mitte.de",
       replyMarkup: this.toMainMenuKeyboardMarkup,
       cancellationToken: cancellationToken);
   }
