@@ -5,8 +5,36 @@ using Infrastructure.Telegram;
 using Infrastructure.Telegram.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
-CreateHostBuilder(args).Build().Run();
+const string seqLoggingSink = "http://host.docker.internal:5341";
+
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+Log.Logger = new LoggerConfiguration()
+  .MinimumLevel.Debug()
+  .Enrich.FromLogContext()
+  .Enrich.WithAssemblyName()
+  .Enrich.WithMachineName()
+  .WriteTo.Seq(seqLoggingSink)
+  .WriteTo.Console()
+  .CreateLogger();
+
+try
+{
+  Log.Information("Starting host");
+  CreateHostBuilder(args).Build().Run();
+
+  return 0;
+}
+catch (Exception ex)
+{
+  Log.Fatal(ex, "Host terminated unexpectedly");
+  return 1;
+}
+finally
+{
+  Log.CloseAndFlush();
+}
 
 static IHostBuilder CreateHostBuilder(string[] args) =>
   Host.CreateDefaultBuilder(args)
@@ -17,4 +45,5 @@ static IHostBuilder CreateHostBuilder(string[] args) =>
       services.Configure<DirectusConfig>(hostContext.Configuration.GetSection("Directus"));
       services.AddTransient<ITelegramService, TelegramService>();
       services.AddTransient<IDirectusService, DirectusService>();
-    });
+    })
+    .UseSerilog();

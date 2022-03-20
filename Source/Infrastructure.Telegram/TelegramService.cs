@@ -47,7 +47,7 @@ public class TelegramService : ITelegramService
       cancellationToken);
 
     var me = await this.botClientInternal.GetMeAsync(cancellationToken);
-    this.log.LogInformation("Start listening for {Username}", me.Username);
+    this.log.LogInformation("Start listening for '{Username}'", me.Username);
   }
 
   public void UpdateTopics(ICollection<Topic> topics)
@@ -69,7 +69,7 @@ public class TelegramService : ITelegramService
           if (update.Message.Type == MessageType.Text)
           {
             var messageText = update.Message.Text;
-            this.log.LogInformation($"Received a '{messageText}' message in chat {chatId}.");
+            this.log.LogInformation("Received a '{TextMessage}' message in chat '{ChatId}'", messageText, chatId);
           }
 
           await this.PrintMainMenuAsync(chatId, cancellationToken);
@@ -93,11 +93,16 @@ public class TelegramService : ITelegramService
             var text =
               $"<strong>{topic.Title}</strong> \n \n {topic.ResponseBody} \n \n<strong>Последнее обновление: {updatedDateTime}</strong>";
 
+            this.log.LogInformation("Request to topic '{TopicName}', topicId '{TopicId}'", topic.Title, topicId);
             await botClient.SendTextMessageAsync(
               chatId,
               text,
               ParseMode.Html,
               cancellationToken: cancellationToken);
+          }
+          else
+          {
+            this.log.LogWarning("Got a request to an unknown topicId '{TopicId}'", topicId);
           }
 
           await this.PrintGoToMainMenuAsync(chatId, cancellationToken);
@@ -108,7 +113,7 @@ public class TelegramService : ITelegramService
     }
     catch (Exception e)
     {
-      this.log.LogError("Cannot handle message. Error - " + e.Message);
+      this.log.LogError("Cannot handle message. Error - '{Error}'", e.Message);
     }
   }
 

@@ -39,11 +39,11 @@ public class BotWorker : BackgroundService
 
     while (!stoppingToken.IsCancellationRequested)
     {
-      await Task.Delay(20000, stoppingToken);
-      this.log.LogInformation("Checking for topic updates ...");
+      await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+      this.log.LogDebug("Checking for topic updates ...");
       var updatedTopics = await this.LoadTopicsAsync();
       this.telegramService.UpdateTopics(updatedTopics);
-      this.log.LogInformation($"Loaded {updatedTopics.Count} topics");
+      this.log.LogDebug("Loaded update with '{TopicCount}' topics", updatedTopics.Count);
     }
 
     this.log.LogInformation("Finished execution");
@@ -69,7 +69,7 @@ public class BotWorker : BackgroundService
       var isTopicContentPresentInPreferredLanguage =
         directusTopic.DetailsTopicContentArea.Any(x => x.Language.Name.Equals(preferredLanguage));
 
-      var topicName = isTopicContentPresentInPreferredLanguage
+      var topicName = isTopicNamePresentInPreferredLanguage
         ? directusTopic.DetailsTopicNameArea.MultiLanguageBody.First(x => x.Language.Name.Equals(preferredLanguage))
           .TopicName
         : directusTopic.DetailsTopicNameArea.MultiLanguageBody.FirstOrDefault()?.TopicName;
