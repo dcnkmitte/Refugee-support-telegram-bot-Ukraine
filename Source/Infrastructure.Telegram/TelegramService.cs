@@ -43,6 +43,7 @@ public class TelegramService : ITelegramService
       AllowedUpdates = new[] { UpdateType.CallbackQuery, UpdateType.Message }
     };
 
+    this.log.LogInformation("Connecting to telegram...");
     this.botClientInternal.StartReceiving(this.HandleUpdateAsync, this.HandleErrorAsync, receiverOptions,
       cancellationToken);
 

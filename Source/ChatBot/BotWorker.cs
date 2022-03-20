@@ -20,16 +20,6 @@ public class BotWorker : BackgroundService
     this.log = log;
   }
 
-  // new List<Topic>()
-  // {
-  //   new Topic("Проживання 🏠", "Проживання\n https://nkmitte.visualstudio.com/Refugee%20support%20telegram%20bot%20Ukraine"),
-  //   new Topic("Новини", "Новиниsjif0wküeofmwpikopwefpik\nwpkp wkp wpok wpo\ne kpwok vpowe \n oisajiowiofnwio"),
-  //   new Topic("Медична допомога 🌡", "Медична допомога\nwpkp wkp wpok wpo\ne kpwok vpowe \n oisajiowiofnwio"),
-  //   new Topic("Оформление виз 📄", "Оформлення док\nументівsjif0wküeofmwpikopwefpikwpkp wkp wpok wpoe kpwok vpowe \n oisajiowiofnwio"),
-  //   new Topic("Связь 📞", "Бесплатные звонки в Украину из городских таксофонов \n Дойче Телеком предоставил возможность звонить в Украину бесплатно из своих телефонных  будок. \n Звонить на телефоны с кодом Украины 00380 (+380) можно без жетонов и без телефонных карт."),
-  //   new Topic("Інша інформація", "Інша інформаціяsjif\n0wküeofmwpikopwefpikw\npkp wkp wpok wpoe kpwok vpowe \n oisajiowiofnwio"),
-  // }
-
   protected override async Task ExecuteAsync(CancellationToken stoppingToken)
   {
     this.log.LogInformation("Start execution");
@@ -41,9 +31,16 @@ public class BotWorker : BackgroundService
     {
       await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
       this.log.LogDebug("Checking for topic updates ...");
-      var updatedTopics = await this.LoadTopicsAsync();
-      this.telegramService.UpdateTopics(updatedTopics);
-      this.log.LogDebug("Loaded update with '{TopicCount}' topics", updatedTopics.Count);
+      try
+      {
+        var updatedTopics = await this.LoadTopicsAsync();
+        this.telegramService.UpdateTopics(updatedTopics);
+        this.log.LogDebug("Loaded update with '{TopicCount}' topics", updatedTopics.Count);
+      }
+      catch (Exception e)
+      {
+        this.log.LogError("Could not refresh topics. Error: {ErrorMessage}", e.Message);
+      }
     }
 
     this.log.LogInformation("Finished execution");

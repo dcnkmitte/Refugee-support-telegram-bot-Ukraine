@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-const string seqLoggingSink = "http://host.docker.internal:5341";
+const string seqLoggingSink = "http://seq:5341";
 
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 Log.Logger = new LoggerConfiguration()
