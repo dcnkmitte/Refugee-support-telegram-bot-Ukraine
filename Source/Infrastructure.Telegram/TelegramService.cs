@@ -44,7 +44,7 @@ public class TelegramService : ITelegramService
     };
 
     this.log.LogInformation("Connecting to telegram...");
-    this.botClientInternal.StartReceiving(this.HandleUpdateAsync, this.HandleErrorAsync, receiverOptions,
+    this.botClientInternal.StartReceiving(this.TryHandleUpdateAsync, this.HandleErrorAsync, receiverOptions,
       cancellationToken);
 
     var me = await this.botClientInternal.GetMeAsync(cancellationToken);
@@ -57,77 +57,93 @@ public class TelegramService : ITelegramService
     this.responseCatalog = topics.ToDictionary(x => x.Id, x => x);
   }
 
-  private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+  private async Task TryHandleUpdateAsync(ITelegramBotClient botClient, Update update,
+    CancellationToken cancellationToken)
   {
     try
     {
-      switch (update.Type)
-      {
-        case UpdateType.Message:
-        {
-          var chatId = update.Message!.Chat.Id;
-
-          if (update.Message.Type == MessageType.Text)
-          {
-            if (update.Message.Text == "/start")
-            {
-              await this.PrintMainMenuAsync(chatId, cancellationToken);
-            }
-            else
-            {
-              var messageText = update.Message.Text;
-              this.log.LogInformation("Received a '{TextMessage}' message in chat '{ChatId}'", messageText, chatId);
-
-              await this.PrintGoToMainMenuAsync(chatId, cancellationToken, "Мы передали Ваш вопрос администраторам и постараемся добавить на него ответ в ближайшие дни. \n");
-            }
-          }
-          else
-          {
-            await this.PrintMainMenuAsync(chatId, cancellationToken);
-
-          }
-
-          break;
-        }
-        case UpdateType.CallbackQuery:
-        {
-          var chatId = update.CallbackQuery!.Message!.Chat.Id;
-          var topicId = update.CallbackQuery.Data;
-
-          if (topicId == this.toMainMenuButton.Id)
-          {
-            await this.PrintMainMenuAsync(chatId, cancellationToken);
-            break;
-          }
-
-          if (this.responseCatalog.TryGetValue(topicId, out var topic))
-          {
-            var updatedDateTime = topic.UpdatedDateTimeUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm");
-            var text =
-              $"<strong>{topic.Title}</strong> \n \n {topic.ResponseBody} \n \n<strong>Последнее обновление: {updatedDateTime}</strong>";
-
-            this.log.LogInformation("Request to topic '{TopicName}', topicId '{TopicId}'", topic.Title, topicId);
-            await botClient.SendTextMessageAsync(
-              chatId,
-              text,
-              ParseMode.Html,
-              cancellationToken: cancellationToken);
-          }
-          else
-          {
-            this.log.LogWarning("Got a request to an unknown topicId '{TopicId}'", topicId);
-          }
-
-          await this.PrintGoToMainMenuAsync(chatId, cancellationToken);
-
-          break;
-        }
-      }
+      await this.HandleUpdateAsync(botClient, update, cancellationToken);
     }
     catch (Exception e)
     {
       this.log.LogError("Cannot handle message. Error - '{Error}'", e.Message);
     }
+  }
+
+  private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+  {
+    switch (update.Type)
+    {
+      case UpdateType.Message:
+      {
+        await this.HandleTextMessageAsync(update, cancellationToken);
+
+        break;
+      }
+      case UpdateType.CallbackQuery:
+      {
+        await this.HandleButtonClickAsync(botClient, update, cancellationToken);
+
+        break;
+      }
+    }
+  }
+
+  private async Task HandleButtonClickAsync(ITelegramBotClient botClient, Update update,
+    CancellationToken cancellationToken)
+  {
+    var chatId = update.CallbackQuery!.Message!.Chat.Id;
+    var topicId = update.CallbackQuery.Data;
+
+    if (topicId == this.toMainMenuButton.Id)
+    {
+      await this.PrintMainMenuAsync(chatId, cancellationToken);
+      return;
+    }
+
+    if (this.responseCatalog.TryGetValue(topicId, out var topic))
+    {
+      var updatedDateTime = topic.UpdatedDateTimeUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm");
+      var text =
+        $"<strong>{topic.Title}</strong> \n \n {topic.ResponseBody} \n \n<strong>Последнее обновление: {updatedDateTime}</strong>";
+
+      this.log.LogInformation("Request to topic '{TopicName}', topicId '{TopicId}'", topic.Title, topicId);
+      await botClient.SendTextMessageAsync(
+        chatId,
+        text,
+        ParseMode.Html,
+        cancellationToken: cancellationToken);
+    }
+    else
+    {
+      this.log.LogWarning("Got a request to an unknown topicId '{TopicId}'", topicId);
+    }
+
+    await this.PrintGoToMainMenuAsync(chatId, cancellationToken);
+  }
+
+  private async Task HandleTextMessageAsync(Update update, CancellationToken cancellationToken)
+  {
+    var chatId = update.Message!.Chat.Id;
+    var isMediaMessage = update.Message.Type != MessageType.Text;
+    if (isMediaMessage)
+    {
+      await this.PrintMainMenuAsync(chatId, cancellationToken);
+      return;
+    }
+
+    var messageText = update.Message.Text;
+    var isStartMessage = messageText == "/start";
+    if (isStartMessage)
+    {
+      await this.PrintMainMenuAsync(chatId, cancellationToken);
+      return;
+    }
+
+    this.log.LogInformation("Received a custom '{TextMessage}' message in chat '{ChatId}'", messageText, chatId);
+
+    await this.PrintGoToMainMenuAsync(chatId, cancellationToken,
+      "Мы передали Ваш вопрос администраторам и постараемся добавить на него ответ в ближайшие дни. \n");
   }
 
   private async Task PrintMainMenuAsync(long chatId, CancellationToken cancellationToken)
