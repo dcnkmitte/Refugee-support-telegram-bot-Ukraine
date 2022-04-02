@@ -78,8 +78,6 @@ public class TelegramService : ITelegramService
               var messageText = update.Message.Text;
               this.log.LogInformation("Received a '{TextMessage}' message in chat '{ChatId}'", messageText, chatId);
 
-              // TODO: Respond to custom messages that we process their questions and add answers in the coming days
-
               await this.PrintGoToMainMenuAsync(chatId, cancellationToken, "Мы передали Ваш вопрос администраторам и постараемся добавить на него ответ в ближайшие дни. \n");
             }
           }
@@ -104,7 +102,7 @@ public class TelegramService : ITelegramService
 
           if (this.responseCatalog.TryGetValue(topicId, out var topic))
           {
-            var updatedDateTime = topic.UpdatedDateTimeUtc.ToLocalTime().ToString("MM/dd/yyyy HH:mm");
+            var updatedDateTime = topic.UpdatedDateTimeUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm");
             var text =
               $"<strong>{topic.Title}</strong> \n \n {topic.ResponseBody} \n \n<strong>Последнее обновление: {updatedDateTime}</strong>";
 

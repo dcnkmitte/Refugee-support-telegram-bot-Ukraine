@@ -1,4 +1,5 @@
-﻿using Infrastructure.Directus;
+﻿using ChatBot.Mappers;
+using Infrastructure.Directus;
 using Infrastructure.Directus.Models;
 using Infrastructure.Telegram;
 using Infrastructure.Telegram.Models;
@@ -12,11 +13,13 @@ public class BotWorker : BackgroundService
   private readonly ITelegramService telegramService;
   private readonly IDirectusService directusService;
   private readonly ILogger<BotWorker> log;
+  private IMapper<DirectusTopic, Topic> topicMapper;
 
   public BotWorker(ITelegramService telegramService, IDirectusService directusService, ILogger<BotWorker> log)
   {
     this.telegramService = telegramService;
     this.directusService = directusService;
+    this.topicMapper = new DirectusTopicToTopicMapper(directusService.PreferredLanguage);
     this.log = log;
   }
 
@@ -29,7 +32,7 @@ public class BotWorker : BackgroundService
 
     while (!stoppingToken.IsCancellationRequested)
     {
-      await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+      await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
       this.log.LogDebug("Checking for topic updates ...");
       try
       {
@@ -49,41 +52,9 @@ public class BotWorker : BackgroundService
   private async Task<List<Topic>> LoadTopicsAsync()
   {
     var directusTopics = await this.directusService.GetTopicsAsync();
-    var topics = this.ConvertToTopics(directusTopics);
+
+    var topics = this.topicMapper.Map(directusTopics).ToList();
+
     return topics;
-  }
-
-  private List<Topic> ConvertToTopics(DirectusTopic[] directusTopics)
-  {
-    var preferredLanguage = this.directusService.PreferredLanguage;
-    var result = new List<Topic>();
-
-    foreach (var directusTopic in directusTopics)
-    {
-      var isTopicNamePresentInPreferredLanguage =
-        directusTopic.DetailsTopicNameArea.MultiLanguageBody.Any(x => x.Language.Name.Equals(preferredLanguage));
-
-      var isTopicContentPresentInPreferredLanguage =
-        directusTopic.DetailsTopicContentArea.Any(x => x.Language.Name.Equals(preferredLanguage));
-
-      var topicName = isTopicNamePresentInPreferredLanguage
-        ? directusTopic.DetailsTopicNameArea.MultiLanguageBody.First(x => x.Language.Name.Equals(preferredLanguage))
-          .TopicName
-        : directusTopic.DetailsTopicNameArea.MultiLanguageBody.FirstOrDefault()?.TopicName;
-
-      if (topicName == null) continue;
-
-      var topicContent = isTopicContentPresentInPreferredLanguage
-        ? directusTopic.DetailsTopicContentArea.First(x => x.Language.Name.Equals(preferredLanguage)).TopicContent
-        : directusTopic.DetailsTopicContentArea.FirstOrDefault()?.TopicContent;
-
-      if (topicContent == null) continue;
-
-      var updatedDateTimeUtc = directusTopic.DateUpdated ?? directusTopic.DateCreated;
-
-      result.Add(new Topic(topicName, topicContent, updatedDateTimeUtc));
-    }
-
-    return result;
   }
 }

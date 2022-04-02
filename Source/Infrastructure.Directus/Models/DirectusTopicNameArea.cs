@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Directus.Models;
 
-public class DirectusTopicTopicNameArea
+public class DirectusTopicNameArea
 {
   [JsonProperty("Sprache")] public DirectusTopicNameMultiLanguageBody[] MultiLanguageBody { get; set; }
 }
