@@ -20,4 +20,10 @@
     <ProjectReference Include="..\ChatBot\ChatBot.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="exampleResponse.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

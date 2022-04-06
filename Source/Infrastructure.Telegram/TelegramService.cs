@@ -29,32 +29,32 @@ public class TelegramService : ITelegramService
     Guard.Argument(configContainer.Value?.AccessToken, nameof(TelegramConfig.AccessToken))
       .NotEmpty("The telegram access token must be provided in the configuration.");
 
-    this.botClientInternal = new TelegramBotClient(configContainer.Value!.AccessToken);
-    this.toMainMenuKeyboardMarkup =
-      InlineKeyboardButton.WithCallbackData(this.toMainMenuButton.Title, this.toMainMenuButton.Id);
+    botClientInternal = new TelegramBotClient(configContainer.Value!.AccessToken);
+    toMainMenuKeyboardMarkup =
+      InlineKeyboardButton.WithCallbackData(toMainMenuButton.Title, toMainMenuButton.Id);
   }
 
   public async Task StartAsync(ICollection<Topic> topics, CancellationToken cancellationToken)
   {
-    this.UpdateTopics(topics);
+    UpdateTopics(topics);
 
     var receiverOptions = new ReceiverOptions
     {
       AllowedUpdates = new[] { UpdateType.CallbackQuery, UpdateType.Message }
     };
 
-    this.log.LogInformation("Connecting to telegram...");
-    this.botClientInternal.StartReceiving(this.TryHandleUpdateAsync, this.HandleErrorAsync, receiverOptions,
+    log.LogInformation("Connecting to telegram...");
+    botClientInternal.StartReceiving(TryHandleUpdateAsync, HandleErrorAsync, receiverOptions,
       cancellationToken);
 
-    var me = await this.botClientInternal.GetMeAsync(cancellationToken);
-    this.log.LogInformation("Start listening for '{Username}'", me.Username);
+    var me = await botClientInternal.GetMeAsync(cancellationToken);
+    log.LogInformation("Start listening for '{Username}'", me.Username);
   }
 
   public void UpdateTopics(ICollection<Topic> topics)
   {
-    this.helpOptionsKeyboardMarkup = topics.ToInlineKeyboard();
-    this.responseCatalog = topics.ToDictionary(x => x.Id, x => x);
+    helpOptionsKeyboardMarkup = topics.ToInlineKeyboard();
+    responseCatalog = topics.ToDictionary(x => x.Id, x => x);
   }
 
   private async Task TryHandleUpdateAsync(ITelegramBotClient botClient, Update update,
@@ -62,11 +62,11 @@ public class TelegramService : ITelegramService
   {
     try
     {
-      await this.HandleUpdateAsync(botClient, update, cancellationToken);
+      await HandleUpdateAsync(botClient, update, cancellationToken);
     }
     catch (Exception e)
     {
-      this.log.LogError("Cannot handle message. Error - '{Error}'", e.Message);
+      log.LogError("Cannot handle message. Error - '{Error}'", e.Message);
     }
   }
 
@@ -76,13 +76,13 @@ public class TelegramService : ITelegramService
     {
       case UpdateType.Message:
       {
-        await this.HandleTextMessageAsync(update, cancellationToken);
+        await HandleTextMessageAsync(update, cancellationToken);
 
         break;
       }
       case UpdateType.CallbackQuery:
       {
-        await this.HandleButtonClickAsync(botClient, update, cancellationToken);
+        await HandleButtonClickAsync(botClient, update, cancellationToken);
 
         break;
       }
@@ -95,19 +95,19 @@ public class TelegramService : ITelegramService
     var chatId = update.CallbackQuery!.Message!.Chat.Id;
     var topicId = update.CallbackQuery.Data;
 
-    if (topicId == this.toMainMenuButton.Id)
+    if (topicId == toMainMenuButton.Id)
     {
-      await this.PrintMainMenuAsync(chatId, cancellationToken);
+      await PrintMainMenuAsync(chatId, cancellationToken);
       return;
     }
 
-    if (this.responseCatalog.TryGetValue(topicId, out var topic))
+    if (responseCatalog.TryGetValue(topicId, out var topic))
     {
       var updatedDateTime = topic.UpdatedDateTimeUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm");
       var text =
         $"<strong>{topic.Title}</strong> \n \n {topic.ResponseBody} \n \n<strong>Последнее обновление: {updatedDateTime}</strong>";
 
-      this.log.LogInformation("Request to topic '{TopicName}', topicId '{TopicId}'", topic.Title, topicId);
+      log.LogInformation("Request to topic '{TopicName}', topicId '{TopicId}'", topic.Title, topicId);
       await botClient.SendTextMessageAsync(
         chatId,
         text,
@@ -116,10 +116,10 @@ public class TelegramService : ITelegramService
     }
     else
     {
-      this.log.LogWarning("Got a request to an unknown topicId '{TopicId}'", topicId);
+      log.LogWarning("Got a request to an unknown topicId '{TopicId}'", topicId);
     }
 
-    await this.PrintGoToMainMenuAsync(chatId, cancellationToken);
+    await PrintGoToMainMenuAsync(chatId, cancellationToken);
   }
 
   private async Task HandleTextMessageAsync(Update update, CancellationToken cancellationToken)
@@ -128,7 +128,7 @@ public class TelegramService : ITelegramService
     var isMediaMessage = update.Message.Type != MessageType.Text;
     if (isMediaMessage)
     {
-      await this.PrintMainMenuAsync(chatId, cancellationToken);
+      await PrintMainMenuAsync(chatId, cancellationToken);
       return;
     }
 
@@ -136,32 +136,32 @@ public class TelegramService : ITelegramService
     var isStartMessage = messageText == "/start";
     if (isStartMessage)
     {
-      await this.PrintMainMenuAsync(chatId, cancellationToken);
+      await PrintMainMenuAsync(chatId, cancellationToken);
       return;
     }
 
-    this.log.LogInformation("Received a custom '{TextMessage}' message in chat '{ChatId}'", messageText, chatId);
+    log.LogInformation("Received a custom '{TextMessage}' message in chat '{ChatId}'", messageText, chatId);
 
-    await this.PrintGoToMainMenuAsync(chatId, cancellationToken,
+    await PrintGoToMainMenuAsync(chatId, cancellationToken,
       "Мы передали Ваш вопрос администраторам и постараемся добавить на него ответ в ближайшие дни. \n");
   }
 
   private async Task PrintMainMenuAsync(long chatId, CancellationToken cancellationToken)
   {
-    await this.botClientInternal.SendTextMessageAsync(
+    await botClientInternal.SendTextMessageAsync(
       chatId,
       "Что вас интересует?",
-      replyMarkup: this.helpOptionsKeyboardMarkup,
+      replyMarkup: helpOptionsKeyboardMarkup,
       cancellationToken: cancellationToken);
   }
 
   private async Task PrintGoToMainMenuAsync(long chatId, CancellationToken cancellationToken,
     string message = "Если информация устарела, сообщите нам ukraine@nk-mitte.de")
   {
-    await this.botClientInternal.SendTextMessageAsync(
+    await botClientInternal.SendTextMessageAsync(
       chatId,
       message,
-      replyMarkup: this.toMainMenuKeyboardMarkup,
+      replyMarkup: toMainMenuKeyboardMarkup,
       cancellationToken: cancellationToken);
   }
 
@@ -174,6 +174,6 @@ public class TelegramService : ITelegramService
       _ => exception.ToString()
     };
 
-    this.log.LogError(errorMessage);
+    log.LogError(errorMessage);
   }
 }

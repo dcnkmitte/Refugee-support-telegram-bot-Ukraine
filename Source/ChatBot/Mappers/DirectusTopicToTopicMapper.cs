@@ -6,30 +6,28 @@ namespace ChatBot.Mappers;
 
 public class DirectusTopicToTopicMapper : IMapper<DirectusTopic, Topic>
 {
-  private readonly string preferredLanguage;
+    private readonly string _preferredLanguage;
 
-  public DirectusTopicToTopicMapper(string preferredLanguage)
-  {
-    this.preferredLanguage = preferredLanguage;
-  }
+    public DirectusTopicToTopicMapper(string preferredLanguage) => _preferredLanguage = preferredLanguage;
 
-  public ICollection<Topic> Map(IEnumerable<DirectusTopic> directusTopics)
-  {
-    var result = new List<Topic>();
-
-    foreach (var directusTopic in directusTopics)
+    public ICollection<Topic> Map(IEnumerable<DirectusTopic> directusTopics)
     {
-      var topicName = directusTopic.TopicNameArea.GetTopicNameInPreferredOrAnyLanguage(this.preferredLanguage);
-      if (topicName == null) continue;
+        var result = new List<Topic>();
 
-      var topicContent = directusTopic.TopicContentArea.GetTopicContentInPreferredOrAnyLanguage(this.preferredLanguage);
-      if (topicContent == null) continue;
+        foreach (var directusTopic in directusTopics)
+        {
+            var topicName = directusTopic.TopicNameArea.GetTopicNameInPreferredOrAnyLanguage(_preferredLanguage);
+            if (topicName == null) continue;
 
-      var updatedDateTimeUtc = directusTopic.GetLastModifiedUtc();
+            var topicContent = directusTopic.TopicContentArea.GetTopicContentInPreferredOrAnyLanguage(_preferredLanguage);
+            if (topicContent == null) continue;
 
-      result.Add(new Topic(topicName, topicContent, updatedDateTimeUtc));
+            var updatedDateTimeUtc = directusTopic.GetLastModifiedUtc();
+
+            var topic = new Topic(topicName, topicContent, updatedDateTimeUtc);
+            result.Add(topic);
+        }
+
+        return result;
     }
-
-    return result;
-  }
 }

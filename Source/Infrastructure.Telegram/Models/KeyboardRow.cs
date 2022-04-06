@@ -11,11 +11,11 @@ internal class KeyboardRow
 
   private readonly List<InlineKeyboardButton> buttons = new();
 
-  public bool CanAdd(Topic topic) => this.buttons.Empty() || this.IsTotalWithWithinMaxLength(topic);
+  public bool CanAdd(Topic topic) => buttons.Empty() || IsTotalWithWithinMaxLength(topic);
 
   private bool IsTotalWithWithinMaxLength(InteractiveElementBase topic)
   {
-    return this.length + topic.TitleWidth <= MaxLength;
+    return length + topic.TitleWidth <= MaxLength;
   }
 
   private static bool IsTitleWiderThanHalfMaxLength(InteractiveElementBase topic)
@@ -25,16 +25,16 @@ internal class KeyboardRow
 
   public void Add(Topic topic)
   {
-    this.buttons.Add(InlineKeyboardButton.WithCallbackData(topic.Title, topic.Id));
+    buttons.Add(InlineKeyboardButton.WithCallbackData(topic.Title, topic.Id));
     if (IsTitleWiderThanHalfMaxLength(topic))
     {
-      this.length = MaxLength;
+      length = MaxLength;
     }
     else
     {
-      this.length += topic.TitleWidth;
+      length += topic.TitleWidth;
     }
   }
 
-  public ReadOnlyCollection<InlineKeyboardButton> GetButtons() => this.buttons.AsReadOnly();
+  public ReadOnlyCollection<InlineKeyboardButton> GetButtons() => buttons.AsReadOnly();
 }
