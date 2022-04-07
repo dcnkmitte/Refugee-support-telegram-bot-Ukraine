@@ -10,51 +10,51 @@ namespace ChatBot;
 
 public class BotWorker : BackgroundService
 {
-  private readonly ITelegramService telegramService;
-  private readonly IDirectusService directusService;
-  private readonly ILogger<BotWorker> log;
-  private IMapper<DirectusTopic, Topic> topicMapper;
+    private readonly ITelegramService _telegramService;
+    private readonly IDirectusService _directusService;
+    private readonly ILogger<BotWorker> _log;
+    private IMapper<DirectusTopic, Topic> _topicMapper;
 
-  public BotWorker(ITelegramService telegramService, IDirectusService directusService, ILogger<BotWorker> log)
-  {
-    this.telegramService = telegramService;
-    this.directusService = directusService;
-    topicMapper = new DirectusTopicToTopicMapper(directusService.PreferredLanguage);
-    this.log = log;
-  }
-
-  protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-  {
-    log.LogInformation("Start execution");
-
-    var topics = await LoadTopicsAsync();
-    await telegramService.StartAsync(topics, stoppingToken);
-
-    while (!stoppingToken.IsCancellationRequested)
+    public BotWorker(ITelegramService telegramService, IDirectusService directusService, ILogger<BotWorker> log, IMapper<DirectusTopic, Topic> topicMapper)
     {
-      await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
-      log.LogDebug("Checking for topic updates ...");
-      try
-      {
-        var updatedTopics = await LoadTopicsAsync();
-        telegramService.UpdateTopics(updatedTopics);
-        log.LogDebug("Loaded update with '{TopicCount}' topics", updatedTopics.Count);
-      }
-      catch (Exception e)
-      {
-        log.LogError("Could not refresh topics. Error: {ErrorMessage}", e.Message);
-      }
+        _telegramService = telegramService;
+        _directusService = directusService;
+        _topicMapper = topicMapper;
+        _log = log;
     }
 
-    log.LogInformation("Finished execution");
-  }
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _log.LogInformation("Start execution");
 
-  private async Task<List<Topic>> LoadTopicsAsync()
-  {
-    var directusTopics = await directusService.GetTopicsAsync();
+        var topics = await LoadTopicsAsync();
+        await _telegramService.StartAsync(topics, stoppingToken);
 
-    var topics = topicMapper.Map(directusTopics).ToList();
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+            _log.LogDebug("Checking for topic updates ...");
+            try
+            {
+                var updatedTopics = await LoadTopicsAsync();
+                _telegramService.UpdateTopics(updatedTopics);
+                _log.LogDebug("Loaded update with '{TopicCount}' topics", updatedTopics.Count);
+            }
+            catch (Exception e)
+            {
+                _log.LogError("Could not refresh topics. Error: {ErrorMessage}", e.Message);
+            }
+        }
 
-    return topics;
-  }
+        _log.LogInformation("Finished execution");
+    }
+
+    private async Task<List<Topic>> LoadTopicsAsync()
+    {
+        var directusTopics = await _directusService.GetTopicsAsync();
+
+        var topics = _topicMapper.Map(directusTopics).ToList();
+
+        return topics;
+    }
 }
