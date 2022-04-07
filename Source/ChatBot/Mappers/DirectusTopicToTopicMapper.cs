@@ -16,10 +16,10 @@ public class DirectusTopicToTopicMapper : IMapper<DirectusTopic, Topic>
 
         foreach (var directusTopic in directusTopics)
         {
-            var topicName = directusTopic.TopicNameArea.GetTopicNameInPreferredOrAnyLanguage(_preferredLanguage);
+            var topicName = directusTopic.TopicNameArea.GetTopicNameIdeallyInPreferredLanguage(_preferredLanguage);
             if (topicName == null) continue;
 
-            var topicContent = directusTopic.TopicContentArea.GetTopicContentInPreferredOrAnyLanguage(_preferredLanguage);
+            var topicContent = directusTopic.TopicContentArea.GetTopicContentIdeallyInPreferredLanguage(_preferredLanguage);
             if (topicContent == null) continue;
 
             var updatedDateTimeUtc = directusTopic.GetLastModifiedUtc();

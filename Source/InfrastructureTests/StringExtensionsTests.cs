@@ -3,12 +3,12 @@ using NUnit.Framework;
 using System.Text.RegularExpressions;
 
 namespace InfrastructureTests;
-public class Tests
+public class StringExtensionsTests
 {
     private const string Pattern = "([0-9A-F]{2}-?){16}";
 
     [Test]
-    public void Test1()
+    public void When_SomeTextWillBeHashed_Then_AValidHashWillBeReturned()
     {
         //arrange
         //act
