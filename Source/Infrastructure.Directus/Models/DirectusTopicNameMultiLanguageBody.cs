@@ -1,8 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Infrastructure.Models;
+using Newtonsoft.Json;
 
 namespace Infrastructure.Directus.Models;
 
-public class DirectusTopicNameMultiLanguageBody
+public class DirectusTopicNameMultiLanguageBody : IMultilanguage
 {
     [JsonProperty("Bereich")] public string TopicName { get; set; }
 
