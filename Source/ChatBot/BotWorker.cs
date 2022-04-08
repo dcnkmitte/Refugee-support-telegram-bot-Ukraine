@@ -33,16 +33,16 @@ public class BotWorker : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
-            _log.LogDebug("Checking for topic updates ...");
             try
             {
+                await ProcessAnsweredQuestionsAsync();
+                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+                _log.LogDebug("Checking for topic updates ...");
                 var updatedTopics = await LoadTopicsAsync();
                 _telegramService.UpdateTopics(updatedTopics);
                 var botConfiguration = await LoadBotConfigurationAsync();
                 _telegramService.UpdateBotConfiguration(botConfiguration.FirstOrDefault());
 
-                ProcessAnsweredQuestionsAsync();
 
 
                 _log.LogDebug("Loaded update with '{TopicCount}' topics", updatedTopics.Count);
