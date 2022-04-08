@@ -19,13 +19,13 @@ public class TelegramService : ITelegramService
 {
     private readonly ILogger<TelegramService> _log;
     private readonly ITelegramBotClientWrapper _botClientInternal;
-    private readonly BotConfiguration[] _botConfiguration;
+    private readonly BotConfiguration _botConfiguration;
     private InlineKeyboardMarkup helpOptionsKeyboardMarkup;
     private readonly InlineKeyboardMarkup _toMainMenuKeyboardMarkup;
     private Dictionary<string, Topic> responseCatalog;
     private readonly InteractiveElementBase toMainMenuButton = ToMainMenu.Create();
 
-    public TelegramService(IOptions<TelegramConfiguration> configContainer, ILogger<TelegramService> log, ITelegramBotClientWrapper botClientInternal, BotConfiguration[] botConfiguration)
+    public TelegramService(IOptions<TelegramConfiguration> configContainer, ILogger<TelegramService> log, ITelegramBotClientWrapper botClientInternal, BotConfiguration botConfiguration)
     {
         _log = log;
         _botClientInternal = botClientInternal;
