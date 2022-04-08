@@ -22,7 +22,7 @@ public class TelegramBotClientWrapper : ITelegramBotClientWrapper
                                                     int? replyToMessageId = null,
                                                     bool? allowSendingWithoutReply = null,
                                                     IReplyMarkup? replyMarkup = null,
-                                                    CancellationToken cancellationToken = default) => await _telegramBotClient.SendTextMessageAsync(chatId, text, parseMode, entities, disableWebPagePreview, disableNotification, replyMarkup: replyMarkup);
+                                                    CancellationToken cancellationToken = default) => await _telegramBotClient.SendTextMessageAsync(chatId, text, parseMode, entities, disableWebPagePreview, disableNotification, replyMarkup: replyMarkup, cancellationToken: cancellationToken);
 
     public void StartReceiving(Func<ITelegramBotClient, Update, CancellationToken, Task> updateHandler,
                                Func<ITelegramBotClient, Exception, CancellationToken, Task> errorHandler,
