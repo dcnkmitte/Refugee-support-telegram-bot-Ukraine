@@ -1,4 +1,5 @@
-﻿using Infrastructure.Telegram.Models;
+﻿using Infrastructure.Models;
+using Infrastructure.Telegram.Models;
 
 namespace Infrastructure.Telegram;
 

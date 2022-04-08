@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Infrastructure.Directus.Models;
+namespace Infrastructure.Models;
 
 public class DirectusLanguage
 {
