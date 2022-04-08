@@ -8,5 +8,4 @@ public interface IDirectusService
     Task<DirectusTopic[]> GetTopicsAsync();
     Task<BotConfiguration[]> GetConfigurationAsync();
 
-    string PreferredLanguage { get; }
 }

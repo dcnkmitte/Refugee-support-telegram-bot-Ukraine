@@ -19,9 +19,6 @@ public class DirectusService : IDirectusService
     {
         Guard.Argument(config.Value.AccessToken, "Directus:AccessToken").NotEmpty();
         Guard.Argument(config.Value.City, "Directus:City").NotEmpty();
-        Guard.Argument(config.Value.PreferredLanguage, "Directus:PreferredLanguage").NotEmpty();
-
-        PreferredLanguage = config.Value.PreferredLanguage;
 
         _log = log;
         _getTopicsUrl = "https://cms.nk-mitte.de/items/Inhalt".SetQueryParams(new
@@ -37,13 +34,11 @@ public class DirectusService : IDirectusService
         {
             access_token = config.Value.AccessToken,
             fields =
-                "aktualisierungsdatumanzeigen,translations.feedbacknachricht,translations.sondermeldung,translations.referenznachricht,translations.begruessungsnachricht,translations.languages_id.*",
+                "aktualisierungsdatumanzeigen,translations.feedbacknachricht,translations.sondermeldung,translations.referenznachricht,translations.begruessungsnachricht,translations.languages_id.*,Sprache.*",
         })
       .SetQueryParam("deep[Stadt][_filter][Name][_eq]", config.Value.City);
 
     }
-
-    public string PreferredLanguage { get; }
 
     public async Task<DirectusTopic[]> GetTopicsAsync()
     {

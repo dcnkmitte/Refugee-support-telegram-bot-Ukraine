@@ -4,7 +4,7 @@ using Infrastructure.Directus.Models;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace ChatBot.Tests
+namespace ChatBotTests
 {
     [TestFixture()]
     public class DirectusTopicToTopicMapperTests

@@ -21,6 +21,7 @@ public class TelegramServiceTests
 {
 
 
+
     [Test]
     public async Task When_StartIsCalled_Then_StartRecivingIsCalled()
     {
@@ -28,7 +29,18 @@ public class TelegramServiceTests
         var configContainerMock = new Mock<IOptions<TelegramConfiguration>>();
         var logMock = new Mock<ILogger<TelegramService>>();
         var botClientInternalMock = new Mock<ITelegramBotClientWrapper>();
-        var botConfiguration = new BotConfiguration();
+        var botConfiguration = new BotConfiguration()
+        {
+            PreferredLanguage = new DirectusLanguage() { Name = "Russisch" },
+            ShowLastUpdadeDate = true,
+            ConfigurationContentArea = new List<BotConfigurationContentArea>() {
+        new BotConfigurationContentArea(){
+            Feedback="feedback",
+            Language=new DirectusLanguage(){Name="Russisch"},
+            Reference="reference",
+            Special="special",
+            Welcome="welcome" }  }
+        };
         var telegramUser = new User();
         botClientInternalMock.Setup(x => x.GetMeAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new User() { FirstName = "bot" });
@@ -36,6 +48,7 @@ public class TelegramServiceTests
         {
             new Topic("title", "body", System.DateTime.UtcNow)
         };
+
         var telegramService = new TelegramService(configContainerMock.Object, logMock.Object, botClientInternalMock.Object, botConfiguration);
 
         //act

@@ -13,7 +13,7 @@ using ChatBot.Mappers;
 using Infrastructure.Directus.Models;
 using Infrastructure.Telegram.Models;
 
-namespace ChatBot.Tests
+namespace ChatBotTests
 {
     [TestFixture()]
     public class BotWorkerTests

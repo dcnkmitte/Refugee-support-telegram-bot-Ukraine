@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Infrastructure.Models;
+using Newtonsoft.Json;
 
 namespace Infrastructure.Directus.Models;
 

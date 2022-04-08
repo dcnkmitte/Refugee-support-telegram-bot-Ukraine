@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Models;
 
-public class BotConfigurationContentArea
+public class BotConfigurationContentArea : IMultilanguage
 {
     [JsonProperty("feedbacknachricht")] public string Feedback { get; set; }
     [JsonProperty("sondermeldung")] public string Special { get; set; }

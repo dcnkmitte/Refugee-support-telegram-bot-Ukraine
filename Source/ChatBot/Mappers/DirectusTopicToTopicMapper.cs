@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Directus.Extensions;
 using Infrastructure.Directus.Models;
+using Infrastructure.Extensions;
 using Infrastructure.Telegram.Models;
 
 namespace ChatBot.Mappers;
@@ -8,7 +9,8 @@ public class DirectusTopicToTopicMapper : IMapper<DirectusTopic, Topic>
 {
     private readonly string _preferredLanguage;
 
-    public DirectusTopicToTopicMapper(string preferredLanguage) => _preferredLanguage = preferredLanguage;
+    public DirectusTopicToTopicMapper(string preferredLanguage) =>
+        _preferredLanguage = preferredLanguage;
 
     public ICollection<Topic> Map(IEnumerable<DirectusTopic> directusTopics)
     {
@@ -16,10 +18,10 @@ public class DirectusTopicToTopicMapper : IMapper<DirectusTopic, Topic>
 
         foreach (var directusTopic in directusTopics)
         {
-            var topicName = directusTopic.TopicNameArea.GetTopicNameIdeallyInPreferredLanguage(_preferredLanguage);
+            var topicName = directusTopic.TopicNameArea.MultiLanguageBody.GetIdeallyInPreferredLanguage(_preferredLanguage, x => x.TopicName);
             if (topicName == null) continue;
 
-            var topicContent = directusTopic.TopicContentArea.GetTopicContentIdeallyInPreferredLanguage(_preferredLanguage);
+            var topicContent = directusTopic.TopicContentArea.GetIdeallyInPreferredLanguage(_preferredLanguage, x => x.TopicContent);
             if (topicContent == null) continue;
 
             var updatedDateTimeUtc = directusTopic.GetLastModifiedUtc();

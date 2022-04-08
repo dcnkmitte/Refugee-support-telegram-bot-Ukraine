@@ -1,5 +1,7 @@
 using Infrastructure.Directus.Extensions;
 using Infrastructure.Directus.Models;
+using Infrastructure.Extensions;
+using Infrastructure.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
@@ -23,7 +25,7 @@ public class Tests
         var directusTopicContentArea = directusTopics[index].TopicContentArea;
 
         //act
-        var result = directusTopicContentArea.GetTopicContentIdeallyInPreferredLanguage(language);
+        var result = directusTopicContentArea.GetIdeallyInPreferredLanguage(language,x=>x.TopicContent);
 
         //arrange
         StringAssert.AreEqualIgnoringCase("contentukr",result);
@@ -60,7 +62,7 @@ public class Tests
         var directusTopicNameArea = directusTopics[index].TopicNameArea;
 
         //act
-        var result = directusTopicNameArea.GetTopicNameIdeallyInPreferredLanguage(language);
+        var result = directusTopicNameArea.MultiLanguageBody.GetIdeallyInPreferredLanguage(language,x=>x.TopicName);
 
         //arrange
         StringAssert.AreEqualIgnoringCase(expected, result);
