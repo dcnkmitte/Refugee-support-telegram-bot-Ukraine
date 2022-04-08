@@ -1,5 +1,6 @@
 using Infrastructure.Directus.Extensions;
 using Infrastructure.Directus.Models;
+using Infrastructure.Extensions;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
@@ -8,13 +9,11 @@ using System.IO;
 namespace Infarastructure.DirestusTests;
 public class Tests
 {
-
-
     [Test]
-    [TestCase("Russisch",0)]
-    [TestCase("Russisch",1)]
-    [TestCase("Ukrainisch",0)]
-    [TestCase("Ukrainisch",1)]
+    [TestCase("Russisch", 0)]
+    [TestCase("Russisch", 1)]
+    [TestCase("Ukrainisch", 0)]
+    [TestCase("Ukrainisch", 1)]
     public void When_ContentInPrefferedLanguageIsNotValid_Then_ReturnValidContentInOtherLanguage(string language, int index)
     {
         //arrange
@@ -23,10 +22,10 @@ public class Tests
         var directusTopicContentArea = directusTopics[index].TopicContentArea;
 
         //act
-        var result = directusTopicContentArea.GetTopicContentIdeallyInPreferredLanguage(language);
+        var result = directusTopicContentArea.GetIdeallyInPreferredLanguage(language, x => x.TopicContent);
 
         //arrange
-        StringAssert.AreEqualIgnoringCase("contentukr",result);
+        StringAssert.AreEqualIgnoringCase("contentukr", result);
     }
 
     [Test]
@@ -37,7 +36,7 @@ public class Tests
         //arrange
         var exampleResponse = File.ReadAllText("exampleResponse.json");
         var directusTopics = JsonConvert.DeserializeObject<DirectusTopicWrapper>(exampleResponse).Data;
-        var directusTopic= directusTopics[index];
+        var directusTopic = directusTopics[index];
 
         //act
         var result = directusTopic.GetLastModifiedUtc();
@@ -47,10 +46,10 @@ public class Tests
     }
 
     [Test]
-    [TestCase("Russisch", 0,"contentukr")]
-    [TestCase("Russisch", 1,"contentru")]
-    [TestCase("Ukrainisch", 0,"contentukr")]
-    [TestCase("Ukrainisch", 1,"contentukr")]
+    [TestCase("Russisch", 0, "contentukr")]
+    [TestCase("Russisch", 1, "contentru")]
+    [TestCase("Ukrainisch", 0, "contentukr")]
+    [TestCase("Ukrainisch", 1, "contentukr")]
     public void When_AreaInPrefferedLanguageIsNotValid_Then_ReturnValidAreaInOtherLanguage(
         string language, int index, string expected)
     {
@@ -60,7 +59,7 @@ public class Tests
         var directusTopicNameArea = directusTopics[index].TopicNameArea;
 
         //act
-        var result = directusTopicNameArea.GetTopicNameIdeallyInPreferredLanguage(language);
+        var result = directusTopicNameArea.MultiLanguageBody.GetIdeallyInPreferredLanguage(language, x => x.TopicName);
 
         //arrange
         StringAssert.AreEqualIgnoringCase(expected, result);

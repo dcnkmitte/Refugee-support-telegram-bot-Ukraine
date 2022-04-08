@@ -1,10 +1,10 @@
-﻿using NUnit.Framework;
-using ChatBot.Mappers;
+﻿using ChatBot.Mappers;
 using Infrastructure.Directus.Models;
-using System.IO;
 using Newtonsoft.Json;
+using NUnit.Framework;
+using System.IO;
 
-namespace ChatBot.Tests
+namespace ChatBotTests
 {
     [TestFixture()]
     public class DirectusTopicToTopicMapperTests

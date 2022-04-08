@@ -2,5 +2,5 @@
 
 public static class EnumerableExtensions
 {
-  public static bool IsEmpty<TSource>(this IEnumerable<TSource> source) => !source.Any();
+    public static bool IsEmpty<TSource>(this IEnumerable<TSource> source) => !source.Any();
 }

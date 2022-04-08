@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Infrastructure.Directus\Infrastructure.Directus.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

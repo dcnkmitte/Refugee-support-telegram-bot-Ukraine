@@ -1,6 +1,7 @@
 ﻿using ChatBot.Mappers;
 using Infrastructure.Directus;
 using Infrastructure.Directus.Models;
+using Infrastructure.Models;
 using Infrastructure.Telegram;
 using Infrastructure.Telegram.Models;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +14,7 @@ public class BotWorker : BackgroundService
     private readonly ITelegramService _telegramService;
     private readonly IDirectusService _directusService;
     private readonly ILogger<BotWorker> _log;
-    private IMapper<DirectusTopic, Topic> _topicMapper;
+    private readonly IMapper<DirectusTopic, Topic> _topicMapper;
 
     public BotWorker(ITelegramService telegramService, IDirectusService directusService, ILogger<BotWorker> log, IMapper<DirectusTopic, Topic> topicMapper)
     {
@@ -38,6 +39,10 @@ public class BotWorker : BackgroundService
             {
                 var updatedTopics = await LoadTopicsAsync();
                 _telegramService.UpdateTopics(updatedTopics);
+                var botConfiguration = await LoadBotConfigurationAsync();
+                _telegramService.UpdateBotConfiguration(botConfiguration.FirstOrDefault());
+
+
                 _log.LogDebug("Loaded update with '{TopicCount}' topics", updatedTopics.Count);
             }
             catch (Exception e)
@@ -56,5 +61,11 @@ public class BotWorker : BackgroundService
         var topics = _topicMapper.Map(directusTopics).ToList();
 
         return topics;
+    }
+    private async Task<BotConfiguration[]?> LoadBotConfigurationAsync()
+    {
+        var directusConfig = await _directusService.GetConfigurationAsync();
+
+        return directusConfig;
     }
 }
