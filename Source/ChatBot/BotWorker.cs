@@ -27,6 +27,7 @@ public class BotWorker : BackgroundService
     {
         _log.LogInformation("Start execution");
 
+        
         var topics = await LoadTopicsAsync();
         await _telegramService.StartAsync(topics, stoppingToken);
 

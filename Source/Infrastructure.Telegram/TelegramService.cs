@@ -1,4 +1,5 @@
 ﻿using Dawn;
+using Infrastructure.Models;
 using Infrastructure.Telegram.Configuration;
 using Infrastructure.Telegram.Extensions;
 using Infrastructure.Telegram.Models;
@@ -18,15 +19,17 @@ public class TelegramService : ITelegramService
 {
     private readonly ILogger<TelegramService> _log;
     private readonly ITelegramBotClientWrapper _botClientInternal;
+    private readonly BotConfiguration[] _botConfiguration;
     private InlineKeyboardMarkup helpOptionsKeyboardMarkup;
     private readonly InlineKeyboardMarkup _toMainMenuKeyboardMarkup;
     private Dictionary<string, Topic> responseCatalog;
     private readonly InteractiveElementBase toMainMenuButton = ToMainMenu.Create();
 
-    public TelegramService(IOptions<TelegramConfiguration> configContainer, ILogger<TelegramService> log, ITelegramBotClientWrapper botClientInternal)
+    public TelegramService(IOptions<TelegramConfiguration> configContainer, ILogger<TelegramService> log, ITelegramBotClientWrapper botClientInternal, BotConfiguration[] botConfiguration)
     {
         _log = log;
         _botClientInternal = botClientInternal;
+        _botConfiguration = botConfiguration;
         Guard.Argument(configContainer.Value?.AccessToken, nameof(TelegramConfiguration.AccessToken))
       .NotEmpty("The telegram access token must be provided in the configuration.");
 

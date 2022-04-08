@@ -3,9 +3,11 @@ using ChatBot.Mappers;
 using Infrastructure.Directus;
 using Infrastructure.Directus.Configuration;
 using Infrastructure.Directus.Models;
+using Infrastructure.Models;
 using Infrastructure.Telegram;
 using Infrastructure.Telegram.Configuration;
 using Infrastructure.Telegram.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -22,6 +24,7 @@ Log.Logger = new LoggerConfiguration()
   .WriteTo.Seq(seqLoggingSink)
   .WriteTo.Console()
   .CreateLogger();
+
 
 try
 {
@@ -42,6 +45,12 @@ finally
 
 static IHostBuilder CreateHostBuilder(string[] args) =>
   Host.CreateDefaultBuilder(args)
+  .ConfigureAppConfiguration((hostingContext, config) =>
+  {
+      config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+      config.AddUserSecrets<Program>();
+  })
+
     .ConfigureServices((hostContext, services) =>
     {
         services.AddHostedService<BotWorker>();
@@ -52,7 +61,8 @@ static IHostBuilder CreateHostBuilder(string[] args) =>
         services.AddSingleton<ITelegramBotClient>(x =>
         new TelegramBotClient(hostContext.Configuration.GetSection("Telegram:AccessToken").Value));
         services.AddSingleton<ITelegramBotClientWrapper, TelegramBotClientWrapper>();
-        services.AddTransient<IMapper<DirectusTopic, Topic>>(x => 
+        services.AddTransient<IMapper<DirectusTopic, Topic>>(x =>
         new DirectusTopicToTopicMapper(x.GetRequiredService<IDirectusService>().PreferredLanguage));
+        services.AddTransient(x => x.GetRequiredService<IDirectusService>().GetConfigurationAsync().GetAwaiter().GetResult());
     })
     .UseSerilog();
