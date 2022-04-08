@@ -1,7 +1,6 @@
 using Infrastructure.Models;
 using Infrastructure.Telegram;
 using Infrastructure.Telegram.Configuration;
-using Infrastructure.Telegram.Extensions;
 using Infrastructure.Telegram.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

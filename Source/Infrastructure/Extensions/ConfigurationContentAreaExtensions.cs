@@ -6,7 +6,7 @@ public static class ConfigurationContentAreaExtensions
       this IEnumerable<T> topicContentAreas,
       string preferredLanguage,
       Func<T, string> fieldToUse)
-        where T:IMultilanguage
+        where T : IMultilanguage
     {
         var topicContentsArray = topicContentAreas.ToArray();
         if (topicContentsArray.Length == 0) return null;
@@ -23,6 +23,5 @@ public static class ConfigurationContentAreaExtensions
         return result;
     }
 
-    private static bool HasValidContent(string x) =>
-        string.IsNullOrEmpty(x) == false;
+    private static bool HasValidContent(string x) => string.IsNullOrEmpty(x) == false;
 }

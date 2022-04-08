@@ -172,7 +172,7 @@ public class TelegramService : ITelegramService
 
         _log.LogInformation("Received a custom '{TextMessage}' message in chat '{ChatId}'", messageText, chatId);
 
-        await PrintGoToMainMenuAsync(chatId, cancellationToken,_referenceMessage);
+        await PrintGoToMainMenuAsync(chatId, cancellationToken, _referenceMessage);
     }
 
     private async Task PrintWelcomeMessageAsync(long chatId, CancellationToken cancellationToken)
@@ -189,21 +189,20 @@ public class TelegramService : ITelegramService
           replyMarkup: _helpOptionsKeyboardMarkup,
           cancellationToken: cancellationToken);
 
-        if(string.IsNullOrEmpty(_specialMessage)==false)
+        if (string.IsNullOrEmpty(_specialMessage) == false)
+        {
             await _botClientInternal.SendTextMessageAsync(
                 chatId,
                 specialMessagePrefix + _specialMessage,
-                cancellationToken:cancellationToken);
+                cancellationToken: cancellationToken);
+        }
     }
 
-    private async Task PrintGoToMainMenuAsync(long chatId, CancellationToken cancellationToken,string message)
-    {
-        await _botClientInternal.SendTextMessageAsync(
+    private async Task PrintGoToMainMenuAsync(long chatId, CancellationToken cancellationToken, string message) => await _botClientInternal.SendTextMessageAsync(
           chatId,
           message,
           replyMarkup: _toMainMenuKeyboardMarkup,
           cancellationToken: cancellationToken);
-    }
 
     private async Task HandleErrorAsync(ITelegramBotClient _, Exception exception, CancellationToken cancellationToken)
     {

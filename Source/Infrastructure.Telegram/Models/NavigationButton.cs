@@ -2,7 +2,7 @@
 
 public class NavigationButton : InteractiveElementBase
 {
-  public NavigationButton(string title) : base(title)
-  {
-  }
+    public NavigationButton(string title) : base(title)
+    {
+    }
 }

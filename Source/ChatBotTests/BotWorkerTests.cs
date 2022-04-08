@@ -1,17 +1,12 @@
-﻿using NUnit.Framework;
-using ChatBot;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Infrastructure.Telegram;
-using Moq;
-using Infrastructure.Directus;
-using Microsoft.Extensions.Logging;
+﻿using ChatBot;
 using ChatBot.Mappers;
+using Infrastructure.Directus;
 using Infrastructure.Directus.Models;
+using Infrastructure.Telegram;
 using Infrastructure.Telegram.Models;
+using Microsoft.Extensions.Logging;
+using Moq;
+using NUnit.Framework;
 
 namespace ChatBotTests
 {

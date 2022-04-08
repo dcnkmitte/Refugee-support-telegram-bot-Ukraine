@@ -43,26 +43,28 @@ finally
     Log.CloseAndFlush();
 }
 
-static IHostBuilder CreateHostBuilder(string[] args) =>
-  Host.CreateDefaultBuilder(args)
-  .ConfigureAppConfiguration((hostingContext, config) =>
-  {
-      config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-      config.AddUserSecrets<Program>();
-  })
+static IHostBuilder CreateHostBuilder(string[] args)
+{
+    return Host.CreateDefaultBuilder(args)
+.ConfigureAppConfiguration((hostingContext, config) =>
+{
+    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+    config.AddUserSecrets<Program>();
+})
 
-    .ConfigureServices((hostContext, services) =>
-    {
-        services.AddHostedService<BotWorker>();
-        services.Configure<TelegramConfiguration>(hostContext.Configuration.GetSection("Telegram"));
-        services.Configure<DirectusConfiguration>(hostContext.Configuration.GetSection("Directus"));
-        services.AddTransient<ITelegramService, TelegramService>();
-        services.AddTransient<IDirectusService, DirectusService>();
-        services.AddSingleton(x => x.GetRequiredService<IDirectusService>().GetConfigurationAsync().GetAwaiter().GetResult().First());
-        services.AddSingleton<ITelegramBotClient>(x =>
-        new TelegramBotClient(hostContext.Configuration.GetSection("Telegram:AccessToken").Value));
-        services.AddSingleton<ITelegramBotClientWrapper, TelegramBotClientWrapper>();
-        services.AddTransient<IMapper<DirectusTopic, Topic>>(x =>
-        new DirectusTopicToTopicMapper(x.GetRequiredService<BotConfiguration>().PreferredLanguage.Name));
-    })
-    .UseSerilog();
+.ConfigureServices((hostContext, services) =>
+{
+    services.AddHostedService<BotWorker>();
+    services.Configure<TelegramConfiguration>(hostContext.Configuration.GetSection("Telegram"));
+    services.Configure<DirectusConfiguration>(hostContext.Configuration.GetSection("Directus"));
+    services.AddTransient<ITelegramService, TelegramService>();
+    services.AddTransient<IDirectusService, DirectusService>();
+    services.AddSingleton(x => x.GetRequiredService<IDirectusService>().GetConfigurationAsync().GetAwaiter().GetResult().First());
+    services.AddSingleton<ITelegramBotClient>(x =>
+    new TelegramBotClient(hostContext.Configuration.GetSection("Telegram:AccessToken").Value));
+    services.AddSingleton<ITelegramBotClientWrapper, TelegramBotClientWrapper>();
+    services.AddTransient<IMapper<DirectusTopic, Topic>>(x =>
+    new DirectusTopicToTopicMapper(x.GetRequiredService<BotConfiguration>().PreferredLanguage.Name));
+})
+.UseSerilog();
+}

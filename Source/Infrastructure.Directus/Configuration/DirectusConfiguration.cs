@@ -2,6 +2,6 @@
 
 public class DirectusConfiguration
 {
-  public string AccessToken { get; set; }
-  public string City { get; set; }
+    public string AccessToken { get; set; }
+    public string City { get; set; }
 }

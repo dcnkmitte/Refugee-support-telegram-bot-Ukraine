@@ -1,5 +1,4 @@
-﻿using Infrastructure.Extensions;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Infrastructure.Models;
 

@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Models;
 
-public class DirectusTopicNameMultiLanguageBody:IMultilanguage
+public class DirectusTopicNameMultiLanguageBody : IMultilanguage
 {
     [JsonProperty("Bereich")] public string TopicName { get; set; }
 

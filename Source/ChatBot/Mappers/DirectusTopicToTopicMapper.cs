@@ -9,8 +9,7 @@ public class DirectusTopicToTopicMapper : IMapper<DirectusTopic, Topic>
 {
     private readonly string _preferredLanguage;
 
-    public DirectusTopicToTopicMapper(string preferredLanguage) =>
-        _preferredLanguage = preferredLanguage;
+    public DirectusTopicToTopicMapper(string preferredLanguage) => _preferredLanguage = preferredLanguage;
 
     public ICollection<Topic> Map(IEnumerable<DirectusTopic> directusTopics)
     {

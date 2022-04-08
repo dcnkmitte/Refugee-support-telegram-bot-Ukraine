@@ -14,7 +14,7 @@ public class BotWorker : BackgroundService
     private readonly ITelegramService _telegramService;
     private readonly IDirectusService _directusService;
     private readonly ILogger<BotWorker> _log;
-    private IMapper<DirectusTopic, Topic> _topicMapper;
+    private readonly IMapper<DirectusTopic, Topic> _topicMapper;
 
     public BotWorker(ITelegramService telegramService, IDirectusService directusService, ILogger<BotWorker> log, IMapper<DirectusTopic, Topic> topicMapper)
     {
