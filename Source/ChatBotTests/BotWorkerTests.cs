@@ -9,6 +9,9 @@ using Infrastructure.Telegram;
 using Moq;
 using Infrastructure.Directus;
 using Microsoft.Extensions.Logging;
+using ChatBot.Mappers;
+using Infrastructure.Directus.Models;
+using Infrastructure.Telegram.Models;
 
 namespace ChatBot.Tests
 {
@@ -22,10 +25,11 @@ namespace ChatBot.Tests
             var telegramServiceMock = new Mock<ITelegramService>();
             var directusServiceMock = new Mock<IDirectusService>();
             var loggerMock = new Mock<ILogger<BotWorker>>();
+            var topicMapperMock = new Mock<IMapper<DirectusTopic, Topic>>();
 
             //act
             _ = new BotWorker(telegramServiceMock.Object,
-                directusServiceMock.Object, loggerMock.Object);
+                directusServiceMock.Object, loggerMock.Object, topicMapperMock.Object);
 
             //assert
             Assert.Pass();

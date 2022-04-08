@@ -13,7 +13,7 @@ public class DirectusService : IDirectusService
   private readonly ILogger<DirectusService> _log;
   private readonly Url _getTopicsUrl;
 
-  public DirectusService(IOptions<DirectusConfig> config, ILogger<DirectusService> log)
+  public DirectusService(IOptions<DirectusConfiguration> config, ILogger<DirectusService> log)
   {
     Guard.Argument(config.Value.AccessToken, "Directus:AccessToken").NotEmpty();
     Guard.Argument(config.Value.City, "Directus:City").NotEmpty();
