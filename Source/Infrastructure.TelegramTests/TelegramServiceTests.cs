@@ -28,7 +28,7 @@ public class TelegramServiceTests
         var configContainerMock = new Mock<IOptions<TelegramConfiguration>>();
         var logMock = new Mock<ILogger<TelegramService>>();
         var botClientInternalMock = new Mock<ITelegramBotClientWrapper>();
-        var botConfiguration = new[] { new BotConfiguration() };
+        var botConfiguration = new BotConfiguration();
         var telegramUser = new User();
         botClientInternalMock.Setup(x => x.GetMeAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new User() { FirstName = "bot" });

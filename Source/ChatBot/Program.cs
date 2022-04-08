@@ -63,6 +63,6 @@ static IHostBuilder CreateHostBuilder(string[] args) =>
         services.AddSingleton<ITelegramBotClientWrapper, TelegramBotClientWrapper>();
         services.AddTransient<IMapper<DirectusTopic, Topic>>(x =>
         new DirectusTopicToTopicMapper(x.GetRequiredService<IDirectusService>().PreferredLanguage));
-        services.AddTransient(x => x.GetRequiredService<IDirectusService>().GetConfigurationAsync().GetAwaiter().GetResult());
+        services.AddTransient(x => x.GetRequiredService<IDirectusService>().GetConfigurationAsync().GetAwaiter().GetResult().First());
     })
     .UseSerilog();
