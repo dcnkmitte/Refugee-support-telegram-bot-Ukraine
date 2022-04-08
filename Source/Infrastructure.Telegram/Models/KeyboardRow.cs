@@ -11,9 +11,9 @@ internal class KeyboardRow
 
   private readonly List<InlineKeyboardButton> buttons = new();
 
-  public bool CanAdd(Topic topic) => buttons.Empty() || IsTotalWithWithinMaxLength(topic);
+  public bool CanAdd(Topic topic) => buttons.IsEmpty() || IsTotalWithSmallerThanMaxLength(topic);
 
-  private bool IsTotalWithWithinMaxLength(InteractiveElementBase topic)
+  private bool IsTotalWithSmallerThanMaxLength(InteractiveElementBase topic)
   {
     return length + topic.TitleWidth <= MaxLength;
   }
