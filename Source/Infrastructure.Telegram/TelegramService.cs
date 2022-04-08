@@ -1,4 +1,5 @@
 ﻿using Dawn;
+using Infrastructure.Directus;
 using Infrastructure.Extensions;
 using Infrastructure.Models;
 using Infrastructure.Telegram.Configuration;
@@ -22,6 +23,7 @@ public class TelegramService : ITelegramService
     private const string specialMessagePrefix = "❗❗❗\n";
     private readonly ILogger<TelegramService> _log;
     private readonly ITelegramBotClientWrapper _botClientInternal;
+    private readonly IDirectusService _directusService;
     private InlineKeyboardMarkup _helpOptionsKeyboardMarkup;
     private readonly InlineKeyboardMarkup _toMainMenuKeyboardMarkup;
     private string? _feedbackMessage;
@@ -32,15 +34,19 @@ public class TelegramService : ITelegramService
     private Dictionary<string, Topic> responseCatalog;
     private readonly InteractiveElementBase toMainMenuButton = ToMainMenu.Create();
 
-    public TelegramService(IOptions<TelegramConfiguration> telegramConfiguration, ILogger<TelegramService> log, ITelegramBotClientWrapper botClientInternal, BotConfiguration botConfiguration)
+    public TelegramService(IOptions<TelegramConfiguration> telegramConfiguration,
+                           ILogger<TelegramService> log,
+                           ITelegramBotClientWrapper botClientInternal,
+                           BotConfiguration botConfiguration,
+                           IDirectusService directusService)
     {
         _log = log;
         _botClientInternal = botClientInternal;
+        _directusService = directusService;
         Guard.Argument(telegramConfiguration.Value?.AccessToken, nameof(TelegramConfiguration.AccessToken))
-      .NotEmpty("The telegram access token must be provided in the configuration.");
+            .NotEmpty("The telegram access token must be provided in the configuration.");
 
-        _toMainMenuKeyboardMarkup =
-          InlineKeyboardButton.WithCallbackData(toMainMenuButton.Title, toMainMenuButton.Id);
+        _toMainMenuKeyboardMarkup = InlineKeyboardButton.WithCallbackData(toMainMenuButton.Title, toMainMenuButton.Id);
 
         UpdateBotConfiguration(botConfiguration);
     }
@@ -169,6 +175,8 @@ public class TelegramService : ITelegramService
             await PrintMainMenuAsync(chatId, cancellationToken);
             return;
         }
+
+        await _directusService.PostQuestionAsync(chatId, messageText);
 
         _log.LogInformation("Received a custom '{TextMessage}' message in chat '{ChatId}'", messageText, chatId);
 

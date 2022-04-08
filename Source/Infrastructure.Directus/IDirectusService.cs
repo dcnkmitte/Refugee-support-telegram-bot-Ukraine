@@ -7,5 +7,5 @@ public interface IDirectusService
 {
     Task<DirectusTopic[]> GetTopicsAsync();
     Task<BotConfiguration[]> GetConfigurationAsync();
-
+    Task PostQuestionAsync(long chatId, string? question);
 }
