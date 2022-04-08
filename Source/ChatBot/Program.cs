@@ -51,6 +51,7 @@ static IHostBuilder CreateHostBuilder(string[] args) =>
         services.AddTransient<IDirectusService, DirectusService>();
         services.AddSingleton<ITelegramBotClient>(x =>
         new TelegramBotClient(hostContext.Configuration.GetSection("Telegram:AccessToken").Value));
+        services.AddSingleton<ITelegramBotClientWrapper, TelegramBotClientWrapper>();
         services.AddTransient<IMapper<DirectusTopic, Topic>>(x => 
         new DirectusTopicToTopicMapper(x.GetRequiredService<IDirectusService>().PreferredLanguage));
     })
