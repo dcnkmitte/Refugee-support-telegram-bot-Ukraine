@@ -42,6 +42,8 @@ public class BotWorker : BackgroundService
                 var botConfiguration = await LoadBotConfigurationAsync();
                 _telegramService.UpdateBotConfiguration(botConfiguration.FirstOrDefault());
 
+                ProcessAnsweredQuestionsAsync();
+
 
                 _log.LogDebug("Loaded update with '{TopicCount}' topics", updatedTopics.Count);
             }
@@ -52,6 +54,17 @@ public class BotWorker : BackgroundService
         }
 
         _log.LogInformation("Finished execution");
+    }
+
+    private async Task ProcessAnsweredQuestionsAsync()
+    {
+        var questions = await _directusService.GetQuestionsAsync();
+
+        foreach (var question in questions)
+        {
+            await _telegramService.SendAnswerToUserAsync(question, CancellationToken.None);
+            await _directusService.UpdateQuestionStatusAsync(question);
+        }
     }
 
     private async Task<List<Topic>> LoadTopicsAsync()

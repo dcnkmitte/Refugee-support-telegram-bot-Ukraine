@@ -1,3 +1,4 @@
+using Infrastructure.Directus;
 using Infrastructure.Models;
 using Infrastructure.Telegram;
 using Infrastructure.Telegram.Configuration;
@@ -27,6 +28,7 @@ public class TelegramServiceTests
         //arrange
         var configContainerMock = new Mock<IOptions<TelegramConfiguration>>();
         var logMock = new Mock<ILogger<TelegramService>>();
+        var directusServiceMock = new Mock<IDirectusService>();
         var botClientInternalMock = new Mock<ITelegramBotClientWrapper>();
         var botConfiguration = new BotConfiguration()
         {
@@ -48,7 +50,7 @@ public class TelegramServiceTests
             new Topic("title", "body", System.DateTime.UtcNow)
         };
 
-        var telegramService = new TelegramService(configContainerMock.Object, logMock.Object, botClientInternalMock.Object, botConfiguration);
+        var telegramService = new TelegramService(configContainerMock.Object, logMock.Object, botClientInternalMock.Object, botConfiguration,directusServiceMock.Object);
 
         //act
         await telegramService.StartAsync(topics, CancellationToken.None);

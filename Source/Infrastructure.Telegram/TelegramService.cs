@@ -1,5 +1,6 @@
 ﻿using Dawn;
 using Infrastructure.Directus;
+using Infrastructure.Directus.Models;
 using Infrastructure.Extensions;
 using Infrastructure.Models;
 using Infrastructure.Telegram.Configuration;
@@ -222,5 +223,15 @@ public class TelegramService : ITelegramService
         };
 
         _log.LogError(errorMessage);
+    }
+
+    public async Task SendAnswerToUserAsync(DirectusQuestion question, CancellationToken cancellationToken)
+    {
+        var chatId = question.ChatId.Replace(".0", "");
+
+        await _botClientInternal.SendTextMessageAsync(
+                chatId,
+                question.Question+":\n"+ question.Answer,
+                cancellationToken: cancellationToken);
     }
 }
