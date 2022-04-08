@@ -1,0 +1,143 @@
+﻿{
+  "data": [
+    {
+      "status": "published",
+      "date_created": "2022-03-15T19:21:08",
+      "Stadt": {
+        "Name": "Hannover"
+      },
+      "Sprache": [
+        {
+          "Inhalt": null,
+          "languages_id": {
+            "Name": "Russisch"
+          }
+        },
+        {
+          "Inhalt": "contentukr",
+          "languages_id": {
+            "Name": "Ukrainisch"
+          }
+        }
+      ],
+      "Bereich": {
+        "Sprache": [
+          {
+            "Bereich": "",
+            "languages_id": {
+              "Name": "Russisch"
+            }
+          },
+          {
+            "Bereich": "contentukr",
+            "languages_id": {
+              "Name": "Ukrainisch"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "status": "published",
+      "date_created": "2022-03-15T21:14:51",
+      "date_updated": "2022-04-05T15:40:05",
+      "Stadt": {
+        "Name": "Hannover"
+      },
+      "Sprache": [
+        {
+          "Inhalt": "contentukr",
+          "languages_id": {
+            "Name": "Ukrainisch"
+          }
+        }
+      ],
+      "Bereich": {
+        "Sprache": [
+          {
+            "Bereich": "contentru",
+            "languages_id": {
+              "Name": "Russisch"
+            }
+          },
+          {
+            "Bereich": "contentukr",
+            "languages_id": {
+              "Name": "Ukrainisch"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "status": "draft",
+      "date_created": "2022-03-16T19:57:15",
+      "date_updated": "2022-04-05T15:45:38",
+      "Stadt": {
+        "Name": "Hannover"
+      },
+      "Sprache": [
+        {
+          "Inhalt": "Чат медицинской помощи украинцам по Германии \nВ нём есть основные моменты по тому, как работает мед. система в Германии\nhttps://t.me/medicine_germany\n\nПока вы еще не подали заявление на социальную помощь, у вас нет медицинской страховки. В этом случае получить помощь врача или рецепт на медикаменты (инсулин и др.) бесплатно можно у Malteser Migrantenmedizin (https://www.malteser.de/menschen-ohne-krankenversicherung.html).  \n\nАдрес: Leibnizufer 13-15, 30169 Hannover (https://goo.gl/maps/KguQowhMsDNYQncZ7)\nТел. +49 511 16 95 430\nmmm.hannover@malteser.org\nЧасы работы: По вторникам с 10 до 12\n\nЕсли нужна мед.помощь ребёнку, можно обратиться напрямую в детскую клинику\nAuf der Bult \nJanusz-Korczak-Allee 12, 30173 Hannover\nTel.: +49 511-81150",
+          "languages_id": {
+            "Name": "Russisch"
+          }
+        },
+        {
+          "Inhalt": "Українська Спілка Нижньої Саксонії започаткувала медичну консультацію по телефону. \nТам вам порадить україно- та російськомовна лікарка і направить до спеціаліста укр/рос. мовного, який прийме безкоштовно. \n+49 1573 5740901\n\nЧат медичної допомоги українцям у Німеччині\nУ ньому є основні моменти того, як працює мед. система у Німеччині\nhttps://t.me/medicine_germany\n\nПоки ви не подали заяву на соціальну допомогу, у вас немає медичної страховки. У цьому випадку отримати допомогу лікаря або рецепт на медикаменти (інсулін та ін) безкоштовно можна у Malteser Migrantenmedizin (https://www.malteser.de/menschen-ohne-krankenversicherung.html).\n\nАдреса: Leibnizufer 13-15, 30169 Hannover (https://goo.gl/maps/KguQowhMsDNYQncZ7)\nТел. +49 511 16 95 430\nmmm.hannover@malteser.org\nЧас роботи: По вівторках з 10 до 12\n\nЯкщо потрібна мед.допомога дитині, можна звернутися безпосередньо до дитячої клініки.\nAuf der Bult\nJanusz-Korczak-Allee 12, 30173 Hannover\nTel.: +49 511-81150",
+          "languages_id": {
+            "Name": "Ukrainisch"
+          }
+        }
+      ],
+      "Bereich": {
+        "Sprache": [
+          {
+            "Bereich": "Медицинская помощь 🚑💊",
+            "languages_id": {
+              "Name": "Russisch"
+            }
+          },
+          {
+            "Bereich": "1",
+            "languages_id": {
+              "Name": "Ukrainisch"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "status": "archived",
+      "date_created": "2022-03-19T16:23:23",
+      "date_updated": "2022-03-20T16:51:05",
+      "Stadt": {
+        "Name": "Hannover"
+      },
+      "Sprache": [
+        {
+          "Inhalt": null,
+          "languages_id": {
+            "Name": "Russisch"
+          }
+        }
+      ],
+      "Bereich": {
+        "Sprache": [
+          {
+            "Bereich": "Спорт🎾",
+            "languages_id": {
+              "Name": "Russisch"
+            }
+          },
+          {
+            "Bereich": "1",
+            "languages_id": {
+              "Name": "Ukrainisch"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
