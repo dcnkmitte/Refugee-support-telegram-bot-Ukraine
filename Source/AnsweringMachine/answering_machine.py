@@ -48,7 +48,7 @@ def sendAnswersBack(answers, inputQuestionJson):
     create the Answer from similar answers from past"""
 
     url = 'http://host.docker.internal:8055/items/fragen/' + \
-        str(inputQuestionJson["key"])+'?access_token=dasisttoken'
+        str(inputQuestionJson["key"])+'?access_token=' + DIRECTUS_TOKEN
 
     patchData = '\n\n'.join(
         ['<b>'+x["frage"] + '</b>\n<i>' + x["antwort"]+'</i>' for x in answers])
