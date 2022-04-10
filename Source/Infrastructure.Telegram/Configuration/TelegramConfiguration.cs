@@ -1,6 +1,6 @@
 ﻿namespace Infrastructure.Telegram.Configuration;
 
-public class TelegramConfig
+public class TelegramConfiguration
 {
   public string AccessToken { get; set; }
 }

@@ -6,9 +6,9 @@ public abstract class InteractiveElementBase
 {
   protected InteractiveElementBase(string title)
   {
-    this.Title = title;
-    this.Id = title.GetMd5Hash();
-    this.TitleWidth = title.Length;
+    Title = title;
+    Id = title.GetMd5Hash();
+    TitleWidth = title.Length;
   }
 
   public int TitleWidth { get; }

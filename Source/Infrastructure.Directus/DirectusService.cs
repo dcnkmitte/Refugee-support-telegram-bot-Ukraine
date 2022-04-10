@@ -10,19 +10,19 @@ namespace Infrastructure.Directus;
 
 public class DirectusService : IDirectusService
 {
-  private readonly ILogger<DirectusService> log;
-  private readonly Url getTopicsUrl;
+  private readonly ILogger<DirectusService> _log;
+  private readonly Url _getTopicsUrl;
 
-  public DirectusService(IOptions<DirectusConfig> config, ILogger<DirectusService> log)
+  public DirectusService(IOptions<DirectusConfiguration> config, ILogger<DirectusService> log)
   {
     Guard.Argument(config.Value.AccessToken, "Directus:AccessToken").NotEmpty();
     Guard.Argument(config.Value.City, "Directus:City").NotEmpty();
     Guard.Argument(config.Value.PreferredLanguage, "Directus:PreferredLanguage").NotEmpty();
 
-    this.PreferredLanguage = config.Value.PreferredLanguage;
+    PreferredLanguage = config.Value.PreferredLanguage;
 
-    this.log = log;
-    this.getTopicsUrl = "https://cms.nk-mitte.de/items/Inhalt".SetQueryParams(new
+    _log = log;
+    _getTopicsUrl = "https://cms.nk-mitte.de/items/Inhalt".SetQueryParams(new
       {
         access_token = config.Value.AccessToken,
         fields =
@@ -36,7 +36,7 @@ public class DirectusService : IDirectusService
 
   public async Task<DirectusTopic[]> GetTopicsAsync()
   {
-    var topics = await this.getTopicsUrl.GetJsonAsync<DirectusTopicWrapper>();
+    var topics = await _getTopicsUrl.GetJsonAsync<DirectusTopicWrapper>();
 
     return topics.Data;
   }
