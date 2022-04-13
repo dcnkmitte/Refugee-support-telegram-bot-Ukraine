@@ -2,5 +2,5 @@
 
 public interface IMapper<in TInput, TResult>
 {
-  ICollection<TResult> Map(IEnumerable<TInput> input);
+    ICollection<TResult> Map(IEnumerable<TInput> input);
 }
