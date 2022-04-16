@@ -2,5 +2,5 @@
 
 public class ToMainMenu
 {
-  public static InteractiveElementBase Create() => new NavigationButton("На главное меню 🔍");
+    public static InteractiveElementBase Create() => new NavigationButton("На главное меню 🔍");
 }

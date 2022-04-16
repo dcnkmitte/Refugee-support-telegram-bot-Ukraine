@@ -4,5 +4,5 @@ namespace Infrastructure.Directus.Models;
 
 public class DirectusTopicWrapper
 {
-  [JsonProperty("data")] public DirectusTopic[] Data { get; set; }
+    [JsonProperty("data")] public DirectusTopic[] Data { get; set; }
 }

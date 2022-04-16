@@ -5,15 +5,15 @@ namespace Infrastructure.Extensions;
 
 public static class HashExtensions
 {
-  public static string GetMd5Hash(this string source)
-  {
-    using var md5Hash = MD5.Create();
-    var sourceBytes = Encoding.UTF8.GetBytes(source);
+    public static string GetMd5Hash(this string source)
+    {
+        using var md5Hash = MD5.Create();
+        var sourceBytes = Encoding.UTF8.GetBytes(source);
 
-    var hashBytes = md5Hash.ComputeHash(sourceBytes);
+        var hashBytes = md5Hash.ComputeHash(sourceBytes);
 
-    var hash = BitConverter.ToString(hashBytes);
+        var hash = BitConverter.ToString(hashBytes);
 
-    return hash;
-  }
+        return hash;
+    }
 }

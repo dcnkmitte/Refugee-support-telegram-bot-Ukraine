@@ -1,10 +1,13 @@
 ﻿using Dawn;
+using Infrastructure.Extensions;
+using Infrastructure.Models;
 using Infrastructure.Telegram.Configuration;
 using Infrastructure.Telegram.Extensions;
 using Infrastructure.Telegram.Models;
 using Infrastructure.Telegram.Models.CommonElements;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
@@ -16,22 +19,42 @@ namespace Infrastructure.Telegram;
 
 public class TelegramService : ITelegramService
 {
+    private const string specialMessagePrefix = "❗❗❗\n";
     private readonly ILogger<TelegramService> _log;
     private readonly ITelegramBotClientWrapper _botClientInternal;
-    private InlineKeyboardMarkup helpOptionsKeyboardMarkup;
+    private InlineKeyboardMarkup _helpOptionsKeyboardMarkup;
     private readonly InlineKeyboardMarkup _toMainMenuKeyboardMarkup;
+    private string? _feedbackMessage;
+    private string? _referenceMessage;
+    private string? _specialMessage;
+    private string? _welcomeMessage;
+    private bool _showLastUpdadeDate;
     private Dictionary<string, Topic> responseCatalog;
     private readonly InteractiveElementBase toMainMenuButton = ToMainMenu.Create();
 
-    public TelegramService(IOptions<TelegramConfiguration> configContainer, ILogger<TelegramService> log, ITelegramBotClientWrapper botClientInternal)
+    public TelegramService(IOptions<TelegramConfiguration> telegramConfiguration, ILogger<TelegramService> log, ITelegramBotClientWrapper botClientInternal, BotConfiguration botConfiguration)
     {
         _log = log;
         _botClientInternal = botClientInternal;
-        Guard.Argument(configContainer.Value?.AccessToken, nameof(TelegramConfiguration.AccessToken))
+        Guard.Argument(telegramConfiguration.Value?.AccessToken, nameof(TelegramConfiguration.AccessToken))
       .NotEmpty("The telegram access token must be provided in the configuration.");
 
         _toMainMenuKeyboardMarkup =
           InlineKeyboardButton.WithCallbackData(toMainMenuButton.Title, toMainMenuButton.Id);
+
+        UpdateBotConfiguration(botConfiguration);
+    }
+
+    public void UpdateBotConfiguration(BotConfiguration botConfiguration)
+    {
+        if (botConfiguration == null) return;
+        var preferredLanguage = botConfiguration.PreferredLanguage.Name;
+        var configurationArea = botConfiguration.ConfigurationContentArea;
+        _feedbackMessage = configurationArea.GetIdeallyInPreferredLanguage(preferredLanguage, x => x.Feedback);
+        _referenceMessage = configurationArea.GetIdeallyInPreferredLanguage(preferredLanguage, x => x.Reference);
+        _specialMessage = configurationArea.GetIdeallyInPreferredLanguage(preferredLanguage, x => x.Special);
+        _welcomeMessage = configurationArea.GetIdeallyInPreferredLanguage(preferredLanguage, x => x.Welcome);
+        _showLastUpdadeDate = botConfiguration.ShowLastUpdadeDate;
     }
 
     public async Task StartAsync(ICollection<Topic> topics, CancellationToken cancellationToken)
@@ -53,7 +76,7 @@ public class TelegramService : ITelegramService
 
     public void UpdateTopics(ICollection<Topic> topics)
     {
-        helpOptionsKeyboardMarkup = topics.ToInlineKeyboard();
+        _helpOptionsKeyboardMarkup = topics.ToInlineKeyboard();
         responseCatalog = topics.ToDictionary(x => x.Id, x => x);
     }
 
@@ -104,8 +127,13 @@ public class TelegramService : ITelegramService
         if (responseCatalog.TryGetValue(topicId, out var topic))
         {
             var updatedDateTime = topic.UpdatedDateTimeUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm");
-            var text =
-              $"<strong>{topic.Title}</strong> \n \n {topic.ResponseBody} \n \n<strong>Последнее обновление: {updatedDateTime}</strong>";
+
+            var stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine($"<strong>{topic.Title}</strong> \n \n {topic.ResponseBody} ");
+            if (_showLastUpdadeDate)
+                stringBuilder.AppendLine($"\n \n<strong>Последнее обновление: {updatedDateTime}</strong>");
+            var text = stringBuilder.ToString();
+
 
             _log.LogInformation("Request to topic '{TopicName}', topicId '{TopicId}'", topic.Title, topicId);
             await botClient.SendTextMessageAsync(
@@ -119,7 +147,8 @@ public class TelegramService : ITelegramService
             _log.LogWarning("Got a request to an unknown topicId '{TopicId}'", topicId);
         }
 
-        await PrintGoToMainMenuAsync(chatId, cancellationToken);
+
+        await PrintGoToMainMenuAsync(chatId, cancellationToken, _feedbackMessage);
     }
 
     private async Task HandleTextMessageAsync(Update update, CancellationToken cancellationToken)
@@ -136,16 +165,20 @@ public class TelegramService : ITelegramService
         var isStartMessage = messageText == "/start";
         if (isStartMessage)
         {
+            await PrintWelcomeMessageAsync(chatId, cancellationToken);
             await PrintMainMenuAsync(chatId, cancellationToken);
             return;
         }
 
         _log.LogInformation("Received a custom '{TextMessage}' message in chat '{ChatId}'", messageText, chatId);
 
+        await PrintGoToMainMenuAsync(chatId, cancellationToken, _referenceMessage);
+    }
 
-        // TODO: Get the message from Backend
-        await PrintGoToMainMenuAsync(chatId, cancellationToken,
-          "Мы передали Ваш вопрос администраторам и постараемся добавить на него ответ в ближайшие дни. \n");
+    private async Task PrintWelcomeMessageAsync(long chatId, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(_welcomeMessage)) return;
+        await _botClientInternal.SendTextMessageAsync(chatId, _welcomeMessage, cancellationToken: cancellationToken);
     }
 
     private async Task PrintMainMenuAsync(long chatId, CancellationToken cancellationToken)
@@ -153,19 +186,23 @@ public class TelegramService : ITelegramService
         await _botClientInternal.SendTextMessageAsync(
           chatId,
           "Что вас интересует?",
-          replyMarkup: helpOptionsKeyboardMarkup,
+          replyMarkup: _helpOptionsKeyboardMarkup,
           cancellationToken: cancellationToken);
+
+        if (string.IsNullOrEmpty(_specialMessage) == false)
+        {
+            await _botClientInternal.SendTextMessageAsync(
+                chatId,
+                specialMessagePrefix + _specialMessage,
+                cancellationToken: cancellationToken);
+        }
     }
 
-    private async Task PrintGoToMainMenuAsync(long chatId, CancellationToken cancellationToken,
-      string message = "Если информация устарела, сообщите нам ukraine@nk-mitte.de")
-    {
-        await _botClientInternal.SendTextMessageAsync(
+    private async Task PrintGoToMainMenuAsync(long chatId, CancellationToken cancellationToken, string message) => await _botClientInternal.SendTextMessageAsync(
           chatId,
           message,
           replyMarkup: _toMainMenuKeyboardMarkup,
           cancellationToken: cancellationToken);
-    }
 
     private async Task HandleErrorAsync(ITelegramBotClient _, Exception exception, CancellationToken cancellationToken)
     {
